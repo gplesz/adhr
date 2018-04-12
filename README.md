@@ -41,3 +41,6 @@ Szükség van egy olyan alkalmazásra:
 # Ezzel foglalkozó tanfolyam
 https://app.netacademia.hu/Tanfolyam/2018wu05-ad-sema-bovitese
 
+# Facebook csoport
+https://www.facebook.com/groups/dotnetcapak
+
