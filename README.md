@@ -38,4 +38,6 @@ Szükség van egy olyan alkalmazásra:
 - Üzemeltető
 - Mezei felhasználó (titkárnő/hr-es/stb.)
 
+# Ezzel foglalkozó tanfolyam
+https://app.netacademia.hu/Tanfolyam/2018wu05-ad-sema-bovitese
 
