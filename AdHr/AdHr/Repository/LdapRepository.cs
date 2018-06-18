@@ -43,6 +43,8 @@ namespace AdHr.Repository
             ldapManager = new LdapManager(adminUser, adminMode, ldapServer, ldapSearchBaseDn, authType, loggerType, logPath);
             ldapManager.Connect();
 
+            var message = ldapManager.GetLdapMessage();
+
             var config = new MapperConfiguration(cfg => cfg.AddProfile<LdapUserProfile>());
             mapper = config.CreateMapper();
         }

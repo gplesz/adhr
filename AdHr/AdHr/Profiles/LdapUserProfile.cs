@@ -17,12 +17,12 @@ namespace AdHr.Profiles
                 .ForMember(d => d.Description, o => o.MapFrom(s => s.GetUserAttribute("description")))
                 ;
 
+            CreateMap<IList<ILdapUser>, List<ReadLdapUserResponse>>()
+                ;
+
             CreateMap<ILdapUser, ResponseBase<ReadLdapUserResponse>>()
                 .ForMember(d => d.Data, o => o.MapFrom(s => s))
                 //todo: az attributumokat is áthozni
-                ;
-
-            CreateMap<IList<ILdapUser>, List<ReadLdapUserResponse>>()
                 ;
 
             var cfg = new MapperConfiguration(c =>
@@ -44,6 +44,39 @@ namespace AdHr.Profiles
                                 mapper.Map<IList<ILdapUser>, List<ReadLdapUserResponse>>(s))))
                 //todo: az attributumokat is áthozni
                 ;
+
+
+            CreateMap<AdhrUser, ReadLdapUserResponse>()
+                ;
+
+            CreateMap<AdhrUser, ResponseBase<ReadLdapUserResponse>>()
+                .ForMember(d => d.Data, o => o.MapFrom(s => s))
+                //todo: az attributumokat is áthozni
+                ;
+
+            CreateMap<List<AdhrUser>, List<ReadLdapUserResponse>>()
+                ;
+
+            var cfg1 = new MapperConfiguration(c =>
+            {
+                c.CreateMap<AdhrUser, ReadLdapUserResponse>()
+                    ;
+            });
+            var mapper1 = cfg1.CreateMapper();
+
+            CreateMap<List<AdhrUser>, ResponseBase<IReadOnlyCollection<ReadLdapUserResponse>>>()
+                .ForMember(d => d.Data, o => o.MapFrom(s => ToReadOnlyList(s, mapper1)))
+                //todo: az attributumokat is áthozni
+                ;
+
+
+        }
+
+        private static ReadOnlyCollection<ReadLdapUserResponse> ToReadOnlyList(List<AdhrUser> list, IMapper mapper)
+        {
+            var roresponse = new ReadOnlyCollection<ReadLdapUserResponse>(mapper.Map<List<AdhrUser>, List<ReadLdapUserResponse>>(list));
+
+            return roresponse;
         }
     }
 }

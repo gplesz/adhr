@@ -3,10 +3,70 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:AdHr.ViewModels"
         xmlns:local="clr-namespace:AdHr"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <DataGrid x:Name="UserGrid"
+                  ItemsSource="{Binding AdhrUsers}"
+                  AutoGenerateColumns="False"
+                  SelectionChanged="UserGrid_SelectionChanged"
+                  >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" 
+                                    Binding="{Binding Name}" />
+                <DataGridTextColumn Header="SamAccountName" 
+                                    Binding="{Binding SamAccountName}" />
+                <DataGridTextColumn Header="DisplayName" 
+                                    Binding="{Binding DisplayName}" />
+            </DataGrid.Columns>
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="{Binding Description}" 
+                                   Grid.Row="0"/>
+                        <TextBlock Text="{Binding DistinguishedName}" 
+                                   Grid.Row="1"/>
+                    </Grid>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+        </DataGrid>
+        <DataGrid x:Name="PropertyGrid"
+                  Grid.Row="1" 
+                  ItemsSource="{Binding SelectedUserProperties}"
+                  AutoGenerateColumns="False"
+                  SelectionChanged="PropertyGrid_SelectionChanged">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" 
+                                    Binding="{Binding Name}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <DataGrid Grid.Column="1" 
+                  Grid.RowSpan="2"
+                  ItemsSource="{Binding SelectedUserSelectedProperty}"
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Value" 
+                                    Binding="{Binding Value}" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+
     </Grid>
 </Window>

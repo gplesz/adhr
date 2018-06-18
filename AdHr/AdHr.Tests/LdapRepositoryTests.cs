@@ -16,12 +16,12 @@ namespace AdHr.Tests
             //Arrange
             var ldapAdminUserDn = "CN=Administrator,CN=Users,DC=adschema,DC=lcl";
             var ldapAdminUserCn = "Administrator"; //"adschema.lcl/Users/Administrator"
-            var ldapAdminUserSn = "test";
+            var ldapAdminUserSn = "Administrator";
             var admin = new LdapUser(ldapAdminUserDn,
                                      ldapAdminUserCn,
                                      ldapAdminUserSn,
                                 new Dictionary<string, List<string>> { { "userPassword", new List<string> { "Windows2016" } } });
-            var ldapServer = "192.168.0.20:389";
+            var ldapServer = "192.168.0.20:54600";
             var ldapSearchBaseDn = "ou=People,DC=adschema,DC=lcl";
             var ldapLogPath = $"{AppDomain.CurrentDomain.BaseDirectory}";
             var repo = new LdapRepository(admin, LDAPLibrary.Enums.LDAPAdminMode.Admin, ldapServer, ldapSearchBaseDn, AuthType.Basic,

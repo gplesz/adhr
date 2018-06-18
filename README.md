@@ -110,3 +110,11 @@ Install-Package Novell.Directory.Ldap.NETStandard -Version 2.3.8
 Import-Module ServerManager
 Install-WindowsFeature RSAT-AD-PowerShell
 ```
+
+Telepítenünk kell az [LDAP using AD LDS] szolgáltatást(https://blogs.msdn.microsoft.com/mlserver/2017/04/10/step-by-step-guide-to-setup-ldaps-on-windows-server/)
+
+[MICROSOFT REMOTE SERVER ADMINISTRATION TOOLS FOR WINDOWS 10](https://www.microsoft.com/en-us/download/confirmation.aspx?id=45520)
+
+Megyünk az active directory felé:
+
+https://www.nuget.org/packages/System.DirectoryServices.AccountManagement/

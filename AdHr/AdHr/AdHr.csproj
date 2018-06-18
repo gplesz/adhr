@@ -60,6 +60,8 @@
       <HintPath>..\packages\System.Console.4.0.0\lib\net46\System.Console.dll</HintPath>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.DirectoryServices.Protocols" />
     <Reference Include="System.IO.FileSystem, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.FileSystem.4.0.1\lib\net46\System.IO.FileSystem.dll</HintPath>
@@ -113,13 +115,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\CreateLdapUserResponse.cs" />
-    <Compile Include="Models\DeleteLdapUserResponse.cs" />
-    <Compile Include="Models\ReadLdapUserResponse.cs" />
+    <Compile Include="Models\AdhrUser.cs" />
+    <Compile Include="Models\AdhrValue.cs" />
+    <Compile Include="Models\LDAP\CreateLdapUserResponse.cs" />
+    <Compile Include="Models\LDAP\DeleteLdapUserResponse.cs" />
+    <Compile Include="Models\LDAP\ReadLdapUserResponse.cs" />
     <Compile Include="Models\ResponseBase.cs" />
-    <Compile Include="Models\UpdateLdapUserResponse.cs" />
+    <Compile Include="Models\LDAP\UpdateLdapUserResponse.cs" />
     <Compile Include="Profiles\LdapUserProfile.cs" />
+    <Compile Include="Profiles\ViewModelProfile.cs" />
+    <Compile Include="Repository\AdRepository.cs" />
     <Compile Include="Repository\LdapRepository.cs" />
+    <Compile Include="ViewModels\AdhrPropertyViewModel.cs" />
+    <Compile Include="ViewModels\AdhrUserViewModel.cs" />
+    <Compile Include="ViewModels\AdhrValueViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -161,6 +172,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Models\AD\" />
     <Folder Include="Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
