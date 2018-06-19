@@ -2,7 +2,7 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AdHr.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="AdServer" Type="System.String" Scope="Application">
+    <Setting Name="AdServer" Type="System.String" Scope="User">
       <Value Profile="(Default)">192.168.0.20</Value>
     </Setting>
     <Setting Name="UserName" Type="System.String" Scope="User">

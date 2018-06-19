@@ -23,12 +23,15 @@ namespace AdHr.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("192.168.0.20")]
         public string AdServer {
             get {
                 return ((string)(this["AdServer"]));
+            }
+            set {
+                this["AdServer"] = value;
             }
         }
         

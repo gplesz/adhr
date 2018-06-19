@@ -127,12 +127,14 @@
     <Compile Include="Profiles\ViewModelProfile.cs" />
     <Compile Include="Repository\AdRepository.cs" />
     <Compile Include="Repository\LdapRepository.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\AdhrPropertyViewModel.cs" />
     <Compile Include="ViewModels\AdhrUserViewModel.cs" />
     <Compile Include="ViewModels\AdhrValueViewModel.cs" />
     <Compile Include="ViewModels\Common\AdhrCommand.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\Common\ViewModelBase.cs" />
+    <Compile Include="ViewModels\Settings\SettingsViewmodel.cs" />
     <Compile Include="Views\AdhrUser\CreateWindow.xaml.cs">
       <DependentUpon>CreateWindow.xaml</DependentUpon>
     </Compile>
@@ -144,6 +146,9 @@
     </Compile>
     <Compile Include="Views\AdhrUser\UpdateWindow.xaml.cs">
       <DependentUpon>UpdateWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Properties\PropertiesWindow.xaml.cs">
+      <DependentUpon>PropertiesWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -173,6 +178,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Properties\PropertiesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -199,7 +208,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\AD\" />

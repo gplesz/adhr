@@ -94,10 +94,21 @@
                                     Binding="{Binding Value}" />
             </DataGrid.Columns>
         </DataGrid>
-        <Button Content="Create" 
+        <StackPanel Orientation="Horizontal">
+            <Button Content="Create" 
                 Padding="5"
                 Margin="10"
                 Command="{Binding CreateCommand}" />
+            <Button Content="Properties" 
+                Padding="5"
+                Margin="10"
+                Command="{Binding PropertiesCommand}" />
+            <Button Content="Connect" 
+                Padding="5"
+                Margin="10"
+                Command="{Binding ConnectCommand}" />
+
+        </StackPanel>
 
     </Grid>
 </Window>
