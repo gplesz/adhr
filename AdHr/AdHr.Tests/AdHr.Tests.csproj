@@ -38,9 +38,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=7.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.7.0.0\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="LDAPLibrary, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LDAPLibrary.3.4.1\lib\net45\LDAPLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.2.1\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
     </Reference>
@@ -51,11 +55,13 @@
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.DirectoryServices.Protocols" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdRepositoryTests.cs" />
     <Compile Include="LdapRepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AutoMapperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
