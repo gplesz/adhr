@@ -46,5 +46,10 @@ namespace AdHr.Views.AdhrUser
                 ViewModel.SelectedProperty = new ObservableCollection<AdhrValueViewModel>();
             }
         }
+
+        private void UpdateSave_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+        }
     }
 }

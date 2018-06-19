@@ -47,5 +47,9 @@ namespace AdHr.Views.AdhrUser
             }
         }
 
+        private void DeleteConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+        }
     }
 }

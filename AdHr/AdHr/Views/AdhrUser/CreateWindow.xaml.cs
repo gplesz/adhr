@@ -23,5 +23,10 @@ namespace AdHr.Views.AdhrUser
         {
             InitializeComponent();
         }
+
+        private void CreateSave_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+        }
     }
 }

@@ -26,6 +26,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Label Content="Name" 
                    Grid.Row="0" Padding="5"/>
@@ -45,6 +46,22 @@
                      Grid.Column="1" 
                      Grid.Row="2"
                      Padding="5"/>
+            <Button Content="Cancel" 
+                    Padding="5"
+                    Margin="10"
+                    HorizontalAlignment="Left"
+                    Grid.Row="4"
+                    Grid.ColumnSpan="2"
+                    IsCancel="True" />
+            <Button x:Name="UpdateSave"
+                    Content="Save" 
+                    Padding="5"
+                    Grid.ColumnSpan="2"
+                    Margin="10"
+                    HorizontalAlignment="Right"
+                    Command="{Binding UpdateSave}"
+                    Grid.Row="4"
+                    IsDefault="True" Click="CreateSave_Click"/>
         </Grid>
     </Grid>
 </Window>

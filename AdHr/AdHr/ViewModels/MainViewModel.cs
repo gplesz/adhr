@@ -63,7 +63,11 @@ namespace AdHr.ViewModels
         private void Create()
         {
             var readWindow = new CreateWindow();
-            readWindow.ShowDialog();
+            var result = readWindow.ShowDialog();
+            if (result==true)
+            {
+
+            }
         }
 
 

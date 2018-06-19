@@ -44,13 +44,21 @@ namespace AdHr.ViewModels
         private void Delete()
         {
             var deleteWindow = new DeleteWindow(this);
-            deleteWindow.ShowDialog();
+            var result = deleteWindow.ShowDialog();
+            if (result == true)
+            {
+
+            }
         }
 
         private void Update()
         {
             var updateWindow = new UpdateWindow(this);
-            updateWindow.ShowDialog();
+            var result = updateWindow.ShowDialog();
+            if (result == true)
+            {
+
+            }
         }
 
         private string _displayName;
