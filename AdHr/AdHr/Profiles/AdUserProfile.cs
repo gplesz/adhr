@@ -14,6 +14,7 @@ namespace AdHr.Profiles
         public AdUserProfile()
         {
             CreateMap<AdhrUser, ReadLdapUserResponse>()
+                .ForMember(d=>d.UserCn, o=>o.Ignore()) 
                 ;
 
             CreateMap<AdhrUser, ResponseBase<ReadLdapUserResponse>>()
