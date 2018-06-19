@@ -1,0 +1,54 @@
+﻿<Window x:Class="AdHr.Views.Properties.PropertiesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AdHr.Views.Properties"
+        mc:Ignorable="d"
+        Title="PropertiesWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label Content="Server" Grid.Column="0" Grid.Row="0"/>
+        <Label Content="UserName" Grid.Column="0" Grid.Row="1"/>
+        <Label Content="Password" Grid.Column="0" Grid.Row="2"/>
+        <TextBox 
+            Grid.Row="0"
+            Grid.Column="1"
+            Text="{Binding Source={StaticResource Settings}, Path=Default.AdServer}" />
+        <TextBox 
+            Grid.Row="1"
+            Grid.Column="1"
+            Text="{Binding Source={StaticResource Settings}, Path=Default.UserName}" />
+        <TextBox 
+            Grid.Row="2"
+            Grid.Column="1"
+            Text="{Binding Source={StaticResource Settings}, Path=Default.Password}" />
+        <Button Content="Cancel" 
+                    Padding="5"
+                    Margin="10"
+                    HorizontalAlignment="Left"
+                    Grid.Row="4"
+                    Grid.ColumnSpan="2"
+                    IsCancel="True" />
+        <Button x:Name="UpdateSave"
+                    Content="Save" 
+                    Padding="5"
+                    Margin="10"
+                    HorizontalAlignment="Right"
+                    Command="{Binding UpdateSave}"
+                    Grid.Row="4"
+                Grid.Column="1"
+                IsDefault="True" Click="PropertiesSave_Click"/>
+
+    </Grid>
+</Window>

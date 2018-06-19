@@ -81,3 +81,40 @@ https://app.netacademia.hu/Tanfolyam/2018wu05-ad-sema-bovitese
 # Facebook csoport
 https://www.facebook.com/groups/dotnetcapak
 
+# LDAP könyvtárak
+- https://www.nuget.org/packages/Novell.Directory.Ldap.NETStandard/
+- https://github.com/dsbenghe/Novell.Directory.Ldap.NETStandard
+
+- https://github.com/wedoit-io/LDAP-Library
+  ennek a nuget csomagja: https://www.nuget.org/packages/LDAPLibrary/
+
+- https://long2know.com/2017/06/net-core-ldap/
+- https://stackoverflow.com/questions/37330705/working-with-directoryservices-in-asp-net-core
+
+# Platform
+- A multiplatformot elvetjük, desktop alkalmazás készítéséhez nem megfelelő a támogatás még. Egyszer windows-os WPF alkalmazást írunk, a ClickOnce telepítő pedig segít a problémamentes telepítésben.
+
+- a novell könyvtár egy kicsit kidolgozottabbnak néz ki, így azzal kezdem a munkát. Kell egy repository, ami a CRUD műveleteket elvégzi.
+
+https://github.com/dsbenghe/Novell.Directory.Ldap.NETStandard
+https://www.nuget.org/packages/Novell.Directory.Ldap.NETStandard
+
+Tehát ez:
+
+```
+Install-Package Novell.Directory.Ldap.NETStandard -Version 2.3.8
+```
+
+[Active directory modul telepítése](https://serverfault.com/a/693331) a szerveren
+```
+Import-Module ServerManager
+Install-WindowsFeature RSAT-AD-PowerShell
+```
+
+Telepítenünk kell az [LDAP using AD LDS] szolgáltatást(https://blogs.msdn.microsoft.com/mlserver/2017/04/10/step-by-step-guide-to-setup-ldaps-on-windows-server/)
+
+[MICROSOFT REMOTE SERVER ADMINISTRATION TOOLS FOR WINDOWS 10](https://www.microsoft.com/en-us/download/confirmation.aspx?id=45520)
+
+Megyünk az active directory felé:
+
+https://www.nuget.org/packages/System.DirectoryServices.AccountManagement/
