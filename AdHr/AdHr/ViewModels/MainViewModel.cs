@@ -69,6 +69,11 @@ namespace AdHr.ViewModels
             set { SetProperty(value, ref _selectedUserSelectedProperty); }
         }
 
+        public string Version
+        {
+            get { return $"Version: {ThisAssembly.Git.SemVer.Major + "." + ThisAssembly.Git.SemVer.Minor + "." + ThisAssembly.Git.SemVer.Patch + ".0"}"; }
+        }
+
         private ICommand _createCommand;
         public ICommand CreateCommand { get { return _createCommand; } }
 
