@@ -46,6 +46,8 @@
                       Grid.Row="3" Grid.Column="0"
                       ItemsSource="{Binding Properties}"
                       AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
                       SelectionChanged="PropertyGrid_SelectionChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Name" 
@@ -56,6 +58,8 @@
             <DataGrid Grid.Column="1" 
                       Grid.Row="3"
                       ItemsSource="{Binding SelectedProperty}"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
                       AutoGenerateColumns="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Value" 

@@ -45,36 +45,6 @@ namespace AdHr.Profiles
                 //todo: az attributumokat is áthozni
                 ;
 
-
-            CreateMap<AdhrUser, ReadLdapUserResponse>()
-                ;
-
-            CreateMap<AdhrUser, ResponseBase<ReadLdapUserResponse>>()
-                .ForMember(d => d.Data, o => o.MapFrom(s => s))
-                ;
-
-            CreateMap<List<AdhrUser>, List<ReadLdapUserResponse>>()
-                ;
-
-            var cfg1 = new MapperConfiguration(c =>
-            {
-                c.CreateMap<AdhrUser, ReadLdapUserResponse>()
-                    ;
-            });
-            var mapper1 = cfg1.CreateMapper();
-
-            CreateMap<List<AdhrUser>, ResponseBase<IReadOnlyCollection<ReadLdapUserResponse>>>()
-                .ForMember(d => d.Data, o => o.MapFrom(s => ToReadOnlyList(s, mapper1)))
-                ;
-
-
-        }
-
-        private static ReadOnlyCollection<ReadLdapUserResponse> ToReadOnlyList(List<AdhrUser> list, IMapper mapper)
-        {
-            var roresponse = new ReadOnlyCollection<ReadLdapUserResponse>(mapper.Map<List<AdhrUser>, List<ReadLdapUserResponse>>(list));
-
-            return roresponse;
         }
     }
 }

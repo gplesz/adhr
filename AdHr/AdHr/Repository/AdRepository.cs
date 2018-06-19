@@ -25,7 +25,7 @@ namespace AdHr.Repository
             //todo: IDisposable
 
             //todo: áttenni a lényeget az AdProfile-ba
-            var config = new MapperConfiguration(cfg => cfg.AddProfile<LdapUserProfile>());
+            var config = new MapperConfiguration(cfg => cfg.AddProfile<AdUserProfile>());
             mapper = config.CreateMapper();
         }
 

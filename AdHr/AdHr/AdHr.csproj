@@ -122,6 +122,7 @@
     <Compile Include="Models\LDAP\ReadLdapUserResponse.cs" />
     <Compile Include="Models\ResponseBase.cs" />
     <Compile Include="Models\LDAP\UpdateLdapUserResponse.cs" />
+    <Compile Include="Profiles\AdUserProfile.cs" />
     <Compile Include="Profiles\LdapUserProfile.cs" />
     <Compile Include="Profiles\ViewModelProfile.cs" />
     <Compile Include="Repository\AdRepository.cs" />

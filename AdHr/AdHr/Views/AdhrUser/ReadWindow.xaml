@@ -45,6 +45,8 @@
             <DataGrid x:Name="PropertyGrid"
                       Grid.Row="3" Grid.Column="0"
                       ItemsSource="{Binding Properties}"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
                       AutoGenerateColumns="False"
                       SelectionChanged="PropertyGrid_SelectionChanged">
                 <DataGrid.Columns>
@@ -55,6 +57,8 @@
             </DataGrid>
             <DataGrid Grid.Column="1" 
                       Grid.Row="3"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
                       ItemsSource="{Binding SelectedProperty}"
                       AutoGenerateColumns="False">
                 <DataGrid.Columns>
