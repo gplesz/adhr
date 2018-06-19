@@ -1,0 +1,65 @@
+﻿<Window x:Class="AdHr.Views.AdhrUser.DeleteWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AdHr.Views.AdhrUser"
+        mc:Ignorable="d"
+        Title="Delete" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="9*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label Content="Name" 
+                   Grid.Row="0" Padding="5"/>
+            <TextBlock Text="{Binding Name}" 
+                     Grid.Column="1" 
+                     Grid.Row="0"
+                     Padding="5"/>
+            <Label Content="DisplayName" 
+                   Grid.Row="1" Padding="5"/>
+            <TextBlock Text="{Binding DisplayName}" 
+                     Grid.Column="1" 
+                     Grid.Row="1"
+                     Padding="5"/>
+            <Label Content="SamAccountName" 
+                   Grid.Row="2"/>
+            <TextBlock Text="{Binding SamAccountName}" 
+                     Grid.Column="1" 
+                     Grid.Row="2"
+                     Padding="5"/>
+            <DataGrid x:Name="PropertyGrid"
+                      Grid.Row="3" Grid.Column="0"
+                      ItemsSource="{Binding Properties}"
+                      AutoGenerateColumns="False"
+                      SelectionChanged="PropertyGrid_SelectionChanged">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" 
+                                    Binding="{Binding Name}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <DataGrid Grid.Column="1" 
+                      Grid.Row="3"
+                      ItemsSource="{Binding SelectedProperty}"
+                      AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Value" 
+                                    Binding="{Binding Value}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>

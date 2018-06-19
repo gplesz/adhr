@@ -27,31 +27,38 @@ namespace AdHr
             InitializeComponent();
         }
 
+        public MainViewModel ViewModel
+        {
+            get
+            {
+                return (MainViewModel)DataContext;
+            }
+                
+        }
+
         private void UserGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var grid = sender as DataGrid;
-            var selectedUser = grid.SelectedValue as AdhrUserViewModel;
-            if (selectedUser!=null)
+            if (grid.SelectedValue is AdhrUserViewModel selectedUser)
             {
-                ((MainViewModel)DataContext).SelectedUserProperties = new ObservableCollection<AdhrPropertyViewModel>(selectedUser.Properties);
+                ViewModel.SelectedUserProperties = new ObservableCollection<AdhrPropertyViewModel>(selectedUser.Properties);
             }
             else
             {
-                ((MainViewModel)DataContext).SelectedUserProperties = new ObservableCollection<AdhrPropertyViewModel>();
+                ViewModel.SelectedUserProperties = new ObservableCollection<AdhrPropertyViewModel>();
             }
         }
 
         private void PropertyGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var grid = sender as DataGrid;
-            var selectedProperty = grid.SelectedValue as AdhrPropertyViewModel;
-            if (selectedProperty != null)
+            if (grid.SelectedValue is AdhrPropertyViewModel selectedProperty)
             {
-                ((MainViewModel)DataContext).SelectedUserSelectedProperty = new ObservableCollection<AdhrValueViewModel>(selectedProperty.Values);
+                ViewModel.SelectedUserSelectedProperty = new ObservableCollection<AdhrValueViewModel>(selectedProperty.Values);
             }
             else
             {
-                ((MainViewModel)DataContext).SelectedUserSelectedProperty = new ObservableCollection<AdhrValueViewModel>();
+                ViewModel.SelectedUserSelectedProperty = new ObservableCollection<AdhrValueViewModel>();
             }
         }
     }

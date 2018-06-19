@@ -1,15 +1,58 @@
-﻿using System;
+﻿using AdHr.ViewModels.Common;
+using AdHr.Views.AdhrUser;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace AdHr.ViewModels
 {
     public class AdhrUserViewModel : ViewModelBase
     {
+        public AdhrUserViewModel()
+        {
+            _updateCommand = new AdhrCommand(
+                (param) => { Update(); }
+            );
+            _deleteCommand = new AdhrCommand(
+                (param) => { Delete(); }
+            );
+            _readCommand = new AdhrCommand(
+                (param) => { Read(); }
+            );
+        }
+
+        private readonly ICommand _readCommand;
+        public ICommand ReadCommand { get { return _readCommand; } }
+
+        private readonly ICommand _updateCommand;
+        public ICommand UpdateCommand { get { return _updateCommand; } }
+
+        private readonly ICommand _deleteCommand;
+        public ICommand DeleteCommand { get { return _deleteCommand; } }
+
+        private void Read()
+        {
+            var readWindow = new ReadWindow(this);
+            readWindow.ShowDialog();
+        }
+
+        private void Delete()
+        {
+            var deleteWindow = new DeleteWindow(this);
+            deleteWindow.ShowDialog();
+        }
+
+        private void Update()
+        {
+            var updateWindow = new UpdateWindow(this);
+            updateWindow.ShowDialog();
+        }
+
         private string _displayName;
         public string DisplayName
         {
@@ -63,6 +106,14 @@ namespace AdHr.ViewModels
             get { return _properties; }
             set { SetProperty(value, ref _properties); }
         }
+
+        private ObservableCollection<AdhrValueViewModel> _selectedProperty;
+        public ObservableCollection<AdhrValueViewModel> SelectedProperty
+        {
+            get { return _selectedProperty; }
+            set { SetProperty(value, ref _selectedProperty); }
+        }
+
 
     }
 }

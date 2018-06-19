@@ -38,11 +38,27 @@
                         <Grid.RowDefinitions>
                             <RowDefinition />
                             <RowDefinition />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         <TextBlock Text="{Binding Description}" 
                                    Grid.Row="0"/>
                         <TextBlock Text="{Binding DistinguishedName}" 
-                                   Grid.Row="1"/>
+                                   Grid.Row="1" />
+                        <StackPanel Grid.Row="2" 
+                                    Orientation="Horizontal">
+                            <Button Content="Update" 
+                                Padding="5"
+                                Margin="10"
+                                Command="{Binding UpdateCommand}" />
+                            <Button Content="Delete" 
+                                Padding="5"
+                                Margin="10"
+                                Command="{Binding UpdateCommand}" />
+                            <Button Content="Read" 
+                                Padding="5"
+                                Margin="10"
+                                Command="{Binding UpdateCommand}" />
+                        </StackPanel>
                     </Grid>
                 </DataTemplate>
             </DataGrid.RowDetailsTemplate>
