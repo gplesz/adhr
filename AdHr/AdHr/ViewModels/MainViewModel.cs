@@ -22,11 +22,12 @@ namespace AdHr.ViewModels
 
         public MainViewModel()
         {
-            //todo: kipakolni settings-be
-            repository = new AdRepository("192.168.0.20", "Administrator", "Windows2016");
+            repository = new AdRepository(
+                Properties.Settings.Default.AdServer
+                ,Properties.Settings.Default.UserName
+                ,Properties.Settings.Default.Password);
             var config = new MapperConfiguration(cfg => cfg.AddProfile<ViewModelProfile>());
             mapper = config.CreateMapper();
-            //var executionPlan = config.BuildExecutionPlan(typeof(ReadLdapUserResponse), typeof(AdhrUserViewModel));
             _createCommand = new AdhrCommand(
                 (param) => { Create(); }
             );

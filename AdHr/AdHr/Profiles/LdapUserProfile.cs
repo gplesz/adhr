@@ -51,7 +51,6 @@ namespace AdHr.Profiles
 
             CreateMap<AdhrUser, ResponseBase<ReadLdapUserResponse>>()
                 .ForMember(d => d.Data, o => o.MapFrom(s => s))
-                //todo: az attributumokat is áthozni
                 ;
 
             CreateMap<List<AdhrUser>, List<ReadLdapUserResponse>>()
@@ -66,7 +65,6 @@ namespace AdHr.Profiles
 
             CreateMap<List<AdhrUser>, ResponseBase<IReadOnlyCollection<ReadLdapUserResponse>>>()
                 .ForMember(d => d.Data, o => o.MapFrom(s => ToReadOnlyList(s, mapper1)))
-                //todo: az attributumokat is áthozni
                 ;
 
 
