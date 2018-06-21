@@ -12,6 +12,7 @@ using AdHr.Profiles;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Security.Principal;
+using System.DirectoryServices.ActiveDirectory;
 
 namespace AdHr.Repository
 {
@@ -19,6 +20,7 @@ namespace AdHr.Repository
     {
         //mivel ez IDisposable, ezért nekünk is annak kell lennünk
         private readonly PrincipalContext adContext = null;
+        private readonly DirectoryContext directoryContext;
         private IMapper mapper;
 
         //jelzi, hogy lefutott-e már a Dispose
@@ -39,6 +41,7 @@ namespace AdHr.Repository
         public AdRepository(string address, string userName, string password)
         {
             adContext = SetContext(address, userName, password);
+            directoryContext = new DirectoryContext(DirectoryContextType.DirectoryServer, address, userName, password);
             InitializeAutoMapper();
         }
 
@@ -139,7 +142,7 @@ namespace AdHr.Repository
             }
         }
 
-        private static AdhrUser GetUserInfo(Principal up)
+        private AdhrUser GetUserInfo(Principal up)
         {
             using (var o = (DirectoryEntry)up.GetUnderlyingObject())
             {
@@ -157,6 +160,7 @@ namespace AdHr.Repository
 
                 var fields = o.Properties;
 
+                //o.RefreshCache();
                 foreach (string fieldName in fields.PropertyNames)
                 {
                     var list = new List<AdhrValue>();
@@ -167,33 +171,28 @@ namespace AdHr.Repository
                     user.Properties.Add(fieldName, new ReadOnlyCollection<AdhrValue>(list));
                 }
 
+                //Az adatok megvannak, kellenek a property-k, amihez írási jog van
+
+                //Lekérdezem az összes attributumot, azt is, amit 
+                //nem töltöttek még ki. Különben nem kapok róla vissza adatot
+                var adschema = ActiveDirectorySchema.GetSchema(directoryContext);
+                var adschemaclass = adschema.FindClass("User");
+                var propcol = adschemaclass.GetAllProperties();
+
                 //jogosultság lista lekérése
-                //o.RefreshCache(new string[] { "allowedAttributesEffective" });
-
-                //var writeRigths0 = user.Properties
-                //                      .Select(x => x.Key)
-                //                      .Where(property => o.Properties["allowedAttributesEffective"].Contains(property));
-
-                o.RefreshCache();
-
-                var writeRigths = o.Properties["allowedAttributesEffective"].Value;
-
-                var acl = o.ObjectSecurity;
-                foreach (ActiveDirectoryAccessRule ace in acl.GetAccessRules(true, true, typeof(NTAccount)))
+                o.RefreshCache(new string[] { "allowedAttributesEffective" });
+                var proplist = new List<string>();
+                foreach (ActiveDirectorySchemaProperty item in propcol)
                 {
-                    if (ace.AccessControlType==System.Security.AccessControl.AccessControlType.Allow
-                        && ace.ActiveDirectoryRights == ActiveDirectoryRights.WriteProperty)
+                    if (o.Properties["allowedAttributesEffective"].Contains(item.Name.ToLower()))
                     {
-                        var ir=ace.IdentityReference.ToString();
+                        proplist.Add(item.Name.ToLower());
                     }
                 }
+                //és itt a proplist, amiben a megfelelő attributumok vannak, 
+                //amihez írási joga van a felhasználónak
 
-                var masks = o.Options.SecurityMasks;
-
-                //var search = new DirectorySearcher(o);
-                //search.PropertiesToLoad.Add("telephoneNumber");
-                //search.PropertiesToLoad.Add("mail");
-                //search.PageSize = 10;
+                var writeRigths = o.Properties["allowedAttributesEffective"].Value;
 
                 return user;
             }
