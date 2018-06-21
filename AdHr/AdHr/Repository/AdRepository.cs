@@ -147,32 +147,6 @@ namespace AdHr.Repository
             using (var o = (DirectoryEntry)up.GetUnderlyingObject())
             {
 
-                var user = new AdhrUser
-                {
-                    DisplayName = up.DisplayName,
-                    Description = up.Description,
-                    DistinguishedName = up.DistinguishedName,
-                    Name = up.Name,
-                    Sid = up.Sid,
-                    UserPrincipalName = up.UserPrincipalName,
-                    SamAccountName = up.SamAccountName,
-                };
-
-                var fields = o.Properties;
-
-                //o.RefreshCache();
-                foreach (string fieldName in fields.PropertyNames)
-                {
-                    var list = new List<AdhrValue>();
-                    foreach (var item in fields[fieldName])
-                    {
-                        list.Add(new AdhrValue(item.ToString()));
-                    }
-                    user.Properties.Add(fieldName, new ReadOnlyCollection<AdhrValue>(list));
-                }
-
-                //Az adatok megvannak, kellenek a property-k, amihez írási jog van
-
                 //Lekérdezem az összes attributumot, azt is, amit 
                 //nem töltöttek még ki. Különben nem kapok róla vissza adatot
                 var adschema = ActiveDirectorySchema.GetSchema(directoryContext);
@@ -192,7 +166,34 @@ namespace AdHr.Repository
                 //és itt a proplist, amiben a megfelelő attributumok vannak, 
                 //amihez írási joga van a felhasználónak
 
-                var writeRigths = o.Properties["allowedAttributesEffective"].Value;
+                //és ezek az adatok kellenek nekünk
+                var user = new AdhrUser
+                {
+                    DisplayName = up.DisplayName,
+                    Description = up.Description,
+                    DistinguishedName = up.DistinguishedName,
+                    Name = up.Name,
+                    Sid = up.Sid,
+                    UserPrincipalName = up.UserPrincipalName,
+                    SamAccountName = up.SamAccountName,
+                };
+
+                var fields = o.Properties;
+
+                o.RefreshCache();
+                foreach (string fieldName in fields.PropertyNames)
+                {
+                    if (proplist.Contains(fieldName))
+                    { // VAN ÍRÁSI JOGUNK, KELLENEK AZ ADATOK
+                        var list = new List<AdhrValue>();
+                        foreach (var item in fields[fieldName])
+                        {
+                            list.Add(new AdhrValue(item.ToString()));
+                        }
+                        user.Properties.Add(fieldName, new ReadOnlyCollection<AdhrValue>(list));
+
+                    }
+                }
 
                 return user;
             }
