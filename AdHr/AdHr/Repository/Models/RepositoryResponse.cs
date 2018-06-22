@@ -1,12 +1,17 @@
-﻿namespace AdHr.Models
+﻿namespace AdHr.Repository.Models
 {
-    public class ResponseBase<T>
+    public class RepositoryResponse<T>
     {
-        public ResponseBase()
+        public RepositoryResponse()
         {
             HasSuccess = false;
             NotFound = false;
             Message = string.Empty;
+        }
+
+        public RepositoryResponse(T data) : this()
+        {
+            Data = data;
         }
 
         public bool HasSuccess { get; set; }

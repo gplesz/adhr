@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
-using AdHr.Models;
 using System.Linq.Expressions;
 using AutoMapper;
 using AdHr.Profiles;
@@ -13,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Security.Principal;
 using System.DirectoryServices.ActiveDirectory;
+using AdHr.Repository.Models;
 
 namespace AdHr.Repository
 {
@@ -28,46 +28,23 @@ namespace AdHr.Repository
 
         public AdRepository()
         {
-            adContext = SetContext();
-            InitializeAutoMapper();
+            adContext = new PrincipalContext(ContextType.Domain);
+            directoryContext = new DirectoryContext(DirectoryContextType.DirectoryServer);
         }
 
         public AdRepository(string address)
         {
-            adContext = SetContext(address);
-            InitializeAutoMapper();
+            adContext = new PrincipalContext(ContextType.Domain, address);
+            directoryContext = new DirectoryContext(DirectoryContextType.DirectoryServer, address);
         }
 
         public AdRepository(string address, string userName, string password)
         {
-            adContext = SetContext(address, userName, password);
+            adContext = new PrincipalContext(ContextType.Domain, address, userName, password);
             directoryContext = new DirectoryContext(DirectoryContextType.DirectoryServer, address, userName, password);
-            InitializeAutoMapper();
         }
 
-        //todo: factory
-        private PrincipalContext SetContext()
-        {
-            return new PrincipalContext(ContextType.Domain);
-        }
-
-        private PrincipalContext SetContext(string address)
-        {
-            return new PrincipalContext(ContextType.Domain, address);
-        }
-
-        private PrincipalContext SetContext(string address, string userName, string password)
-        {
-            return new PrincipalContext(ContextType.Domain, address, userName, password);
-        }
-
-        private void InitializeAutoMapper()
-        {
-            var config = new MapperConfiguration(cfg => cfg.AddProfile<AdUserProfile>());
-            mapper = config.CreateMapper();
-        }
-
-        public ResponseBase<CreateLdapUserResponse> Create(string login, string password, string description, string displayName)
+        public RepositoryResponse<CreateUserResponse> Create(string login, string password, string description, string displayName)
         {
             var user = new UserPrincipal(adContext)
             {
@@ -81,10 +58,10 @@ namespace AdHr.Repository
             user.Save();
             //todo: a visszatérési értékek kidolgozása
 
-            return new ResponseBase<CreateLdapUserResponse>();
+            return new RepositoryResponse<CreateUserResponse>();
         }
 
-        public ResponseBase<ReadLdapUserResponse> Read(string sid)
+        public RepositoryResponse<ReadUserResponse> Read(string sid)
         {
             using (var userPrincipal = new UserPrincipal(adContext))
             {
@@ -94,15 +71,13 @@ namespace AdHr.Repository
                                      .Cast<UserPrincipal>()
                                      .FirstOrDefault(x => x.Sid.Value.Equals(sid, StringComparison.OrdinalIgnoreCase));
 
-                    var adhrUser = GetUserInfo(user);
-
-                    //todo: mapping-et intézni
-                    return mapper.Map<ResponseBase<ReadLdapUserResponse>>(adhrUser);
+                    var response = GetUserInfo(user);
+                    return new RepositoryResponse<ReadUserResponse>(response);
                 }
             }
         }
 
-        public ResponseBase<UpdateLdapUserResponse> Update(string sid, string propertyName, string propertyValue)
+        public RepositoryResponse<ReadUserResponse> Update(string sid, string propertyName, string propertyValue)
         {
             using (var userPrincipal = new UserPrincipal(adContext))
             {
@@ -113,61 +88,55 @@ namespace AdHr.Repository
                                      .FirstOrDefault(x => x.Sid.Value.Equals(sid, StringComparison.OrdinalIgnoreCase));
 
                     //todo: a módosítás
-                    return new ResponseBase<UpdateLdapUserResponse>();
+                    return new RepositoryResponse<ReadUserResponse>();
                 }
             }
         }
 
-        public ResponseBase<IReadOnlyCollection<ReadLdapUserResponse>> GetList(Expression<Func<AdhrUser, bool>> filter = null, int skip = 0, int take = 20)
+        public RepositoryResponse<IReadOnlyCollection<ReadUserResponse>> GetList(Expression<Func<ReadUserResponse, bool>> filter = null, 
+                                                                                                                        int skip = 0, int take = 20)
         {
-            var userAttributes = new List<string>
-            {
-                "description"
-            };
-
             using (var userPrincipal = new UserPrincipal(adContext))
             {
                 var search = new PrincipalSearcher(userPrincipal);
-
-                var returnUsers = new List<AdhrUser>();
+                var response = new List<ReadUserResponse>();
 
                 foreach (var up in search.FindAll())
                 {
-                    returnUsers.Add(GetUserInfo(up));
+                    response.Add(GetUserInfo(up));
                 }
 
-                var response = mapper.Map<ResponseBase<IReadOnlyCollection<ReadLdapUserResponse>>>(returnUsers);
-                return response;
-
+                return new RepositoryResponse<IReadOnlyCollection<ReadUserResponse>>(
+                            new ReadOnlyCollection<ReadUserResponse>(response));
             }
         }
 
-        private AdhrUser GetUserInfo(Principal up)
+        private ReadUserResponse GetUserInfo(Principal up)
         {
             using (var o = (DirectoryEntry)up.GetUnderlyingObject())
             {
-
                 //Lekérdezem az összes attributumot, azt is, amit 
-                //nem töltöttek még ki. Különben nem kapok róla vissza adatot
+                //nem töltöttek még ki. Erre azért van szükség, mert 
+                //ha nincs kitöltve egy attributum, akkor nem nem kapok 
+                //róla vissza adatot
                 var adschema = ActiveDirectorySchema.GetSchema(directoryContext);
-                var adschemaclass = adschema.FindClass("User");
-                var propcol = adschemaclass.GetAllProperties();
+                var adschemaclass = adschema.FindClass(GlobalStrings.User);
+                var allAttributes = adschemaclass.GetAllProperties();
 
-                //jogosultság lista lekérése
-                o.RefreshCache(new string[] { "allowedAttributesEffective" });
-                var proplist = new List<string>();
-                foreach (ActiveDirectorySchemaProperty item in propcol)
+                //jogosultság lista lekérése, majd az attributumok erre a listára szűrése
+                o.RefreshCache(new string[] { GlobalStrings.AllowedAttributesEffective });
+                //ide jön az írható attributumok listája
+                var writableProperties = new List<string>();
+                foreach (ActiveDirectorySchemaProperty item in allAttributes)
                 {
-                    if (o.Properties["allowedAttributesEffective"].Contains(item.Name.ToLower()))
+                    if (o.Properties[GlobalStrings.AllowedAttributesEffective].Contains(item.Name))
                     {
-                        proplist.Add(item.Name.ToLower());
+                        writableProperties.Add(item.Name);
                     }
                 }
-                //és itt a proplist, amiben a megfelelő attributumok vannak, 
-                //amihez írási joga van a felhasználónak
 
                 //és ezek az adatok kellenek nekünk
-                var user = new AdhrUser
+                var user = new ReadUserResponse
                 {
                     DisplayName = up.DisplayName,
                     Description = up.Description,
@@ -178,21 +147,27 @@ namespace AdHr.Repository
                     SamAccountName = up.SamAccountName,
                 };
 
+                //az előbb a cache-t leszűkítettem az allowedAttributesEffective
+                //attributumra, mert máshogy nem tudtam betölteni. Így viszont újra kell
+                //a cache-t frissíteni
+                o.RefreshCache();
                 var fields = o.Properties;
 
-                o.RefreshCache();
-                foreach (string fieldName in fields.PropertyNames)
+                foreach (string fieldName in writableProperties)
                 {
-                    if (proplist.Contains(fieldName))
-                    { // VAN ÍRÁSI JOGUNK, KELLENEK AZ ADATOK
-                        var list = new List<AdhrValue>();
+                    var list = new List<AdhrValue>();
+                    if (fields[fieldName].Value!=null)
+                    {
                         foreach (var item in fields[fieldName])
                         {
                             list.Add(new AdhrValue(item.ToString()));
                         }
-                        user.Properties.Add(fieldName, new ReadOnlyCollection<AdhrValue>(list));
-
                     }
+                    else
+                    {
+                        list.Add(new AdhrValue(null));
+                    }
+                    user.Properties.Add(fieldName, new ReadOnlyCollection<AdhrValue>(list));
                 }
 
                 return user;

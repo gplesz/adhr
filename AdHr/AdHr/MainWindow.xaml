@@ -23,9 +23,11 @@
         <DataGrid x:Name="UserGrid"
                   ItemsSource="{Binding AdhrUsers}"
                   Grid.Row="1"
+                  IsReadOnly="True"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
+                  Margin="3"
                   SelectionChanged="UserGrid_SelectionChanged"
                   >
             <DataGrid.Columns>
@@ -36,44 +38,37 @@
                 <DataGridTextColumn Header="DisplayName" 
                                     Width="*"
                                     Binding="{Binding DisplayName}" />
+                <DataGridTemplateColumn Header="">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal"
+                                        Margin="1">
+                                <Button Content="Update" 
+                                        Padding="5"
+                                        Margin="1"
+                                        Command="{Binding UpdateCommand}" />
+                                <Button Content="Delete" 
+                                        Padding="5"
+                                        Margin="1"
+                                        Command="{Binding DeleteCommand}" />
+                                <Button Content="Read" 
+                                        Padding="5"
+                                        Margin="1"
+                                        Command="{Binding ReadCommand}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
-            <DataGrid.RowDetailsTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="{Binding Description}" 
-                                   Grid.Row="0"/>
-                        <TextBlock Text="{Binding DistinguishedName}" 
-                                   Grid.Row="1" />
-                        <StackPanel Grid.Row="2" 
-                                    Orientation="Horizontal">
-                            <Button Content="Update" 
-                                Padding="5"
-                                Margin="10"
-                                Command="{Binding UpdateCommand}" />
-                            <Button Content="Delete" 
-                                Padding="5"
-                                Margin="10"
-                                Command="{Binding DeleteCommand}" />
-                            <Button Content="Read" 
-                                Padding="5"
-                                Margin="10"
-                                Command="{Binding ReadCommand}" />
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </DataGrid.RowDetailsTemplate>
         </DataGrid>
         <DataGrid x:Name="PropertyGrid"
                   Grid.Row="2" 
                   ItemsSource="{Binding SelectedUserProperties}"
+                  IsReadOnly="True"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
+                  Margin="3"
                   SelectionChanged="PropertyGrid_SelectionChanged">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" 
@@ -84,10 +79,13 @@
         <DataGrid Grid.Column="1" 
                   Grid.Row="1"
                   Grid.RowSpan="2"
+                  Margin="3"
+                  IsReadOnly="True"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
                   ItemsSource="{Binding SelectedUserSelectedProperty}"
-                  AutoGenerateColumns="False" GridLinesVisibility="Horizontal">
+                  AutoGenerateColumns="False" 
+                  GridLinesVisibility="Horizontal">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Value" 
                                     Width="*"
@@ -95,7 +93,7 @@
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel Orientation="Horizontal">
-            <Button Content="Create" 
+            <Button Content="Create New Contact" 
                 Padding="5"
                 Margin="10"
                 Command="{Binding CreateCommand}" />
@@ -109,7 +107,9 @@
                 Command="{Binding ConnectCommand}" />
 
         </StackPanel>
-        <Label Content="{Binding Version}" Grid.Column="1" Grid.Row="0"/>
-
+        <Label Content="{Binding Version}"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Right"
+               Grid.Column="1" Grid.Row="0"/>
     </Grid>
 </Window>

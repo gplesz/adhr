@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace AdHr.Models
+namespace AdHr.Repository.Models
 {
-    public class AdhrUser
+    public class ReadUserResponse
     {
-        public AdhrUser()
-        { // null object pattern
+        public ReadUserResponse()
+        {
             Properties = new Dictionary<string, IReadOnlyCollection<AdhrValue>>();
         }
 
@@ -21,6 +17,7 @@ namespace AdHr.Models
         public SecurityIdentifier Sid { get; set; }
         public string UserPrincipalName { get; set; }
         public string SamAccountName { get; set; }
+
         public Dictionary<string, IReadOnlyCollection<AdhrValue>> Properties { get; set; }
     }
 }

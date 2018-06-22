@@ -1,17 +1,10 @@
-﻿using AdHr.Models;
-using AdHr.Profiles;
+﻿using AdHr.Profiles;
 using AdHr.Repository;
 using AdHr.ViewModels.Common;
 using AdHr.Views.AdhrUser;
 using AdHr.Views.Properties;
 using AutoMapper;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace AdHr.ViewModels

@@ -1,4 +1,4 @@
-﻿using AdHr.Models;
+﻿using AdHr.Repository.Models;
 using AdHr.ViewModels;
 using AutoMapper;
 using System;
@@ -38,7 +38,7 @@ namespace AdHr.Profiles
             });
             var mapper = cfg.CreateMapper();
 
-            CreateMap<ReadLdapUserResponse, AdhrUserViewModel>()
+            CreateMap<ReadUserResponse, AdhrUserViewModel>()
                 .ForMember(d => d.Properties, o => o.MapFrom(d => ToObservableList(d.Properties, mapper)))
                 ;
 

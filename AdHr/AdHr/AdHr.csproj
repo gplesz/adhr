@@ -117,18 +117,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\AdhrUser.cs" />
-    <Compile Include="Models\AdhrValue.cs" />
-    <Compile Include="Models\LDAP\CreateLdapUserResponse.cs" />
-    <Compile Include="Models\LDAP\DeleteLdapUserResponse.cs" />
-    <Compile Include="Models\LDAP\ReadLdapUserResponse.cs" />
-    <Compile Include="Models\ResponseBase.cs" />
-    <Compile Include="Models\LDAP\UpdateLdapUserResponse.cs" />
-    <Compile Include="Profiles\AdUserProfile.cs" />
-    <Compile Include="Profiles\LdapUserProfile.cs" />
+    <Compile Include="GlobalStrings.cs" />
+    <Compile Include="Repository\Models\AdhrValue.cs" />
+    <Compile Include="Repository\Models\RepositoryResponse.cs" />
     <Compile Include="Profiles\ViewModelProfile.cs" />
     <Compile Include="Repository\AdRepository.cs" />
-    <Compile Include="Repository\LdapRepository.cs" />
+    <Compile Include="Repository\Models\CreateUserResponse.cs" />
+    <Compile Include="Repository\Models\DeleteUserResponse.cs" />
+    <Compile Include="Repository\Models\ReadUserResponse.cs" />
+    <Compile Include="Repository\Models\UpdateUserResponse.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\AdhrPropertyViewModel.cs" />
     <Compile Include="ViewModels\AdhrUserViewModel.cs" />
@@ -215,7 +212,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\AD\" />
     <Folder Include="Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
