@@ -97,13 +97,18 @@ namespace AdHr.ViewModels
         private ICommand _connectCommand;
         public ICommand ConnectCommand { get { return _connectCommand; } }
 
+        //todo: ezt implementálni
+        public bool CanUserCreateContact { get; set; }
+
         private void Create()
         {
-            var readWindow = new CreateWindow();
+            var createdData = new AdhrUserViewModel();
+            //todo a property gyűjteményt kitölteni
+            var readWindow = new CreateWindow(createdData);
             var result = readWindow.ShowDialog();
             if (result==true)
             {
-
+                repository.Create(createdData.SamAccountName, createdData.Description, createdData.DisplayName);
             }
         }
 

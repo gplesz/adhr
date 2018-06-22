@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdHr.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,10 @@ namespace AdHr.Views.AdhrUser
     /// </summary>
     public partial class CreateWindow : Window
     {
-        public CreateWindow()
+        public CreateWindow(AdhrUserViewModel model)
         {
             InitializeComponent();
+            DataContext = model;
         }
 
         private void CreateSave_Click(object sender, RoutedEventArgs e)

@@ -38,18 +38,21 @@ namespace AdHr.Repository
             directoryContext = new DirectoryContext(DirectoryContextType.DirectoryServer, address, userName, password);
         }
 
-        public RepositoryResponse<CreateUserResponse> Create(string login, string password, string description, string displayName)
+        public RepositoryResponse<CreateUserResponse> Create(string login, string description, string displayName)
         {
-            var user = new UserPrincipal(adContext)
-            {
-                UserPrincipalName = login,
-                Enabled = true,
-                Description = description,
-                DisplayName = displayName
-            };
+            //todo: request dto-t készíteni
+            //todo: létrehozást implementálni
 
-            user.SetPassword(password);
-            user.Save();
+            //var user = new UserPrincipal(adContext)
+            //{
+            //    UserPrincipalName = login,
+            //    Enabled = true,
+            //    Description = description,
+            //    DisplayName = displayName
+            //};
+
+            //user.SetPassword(password);
+            //user.Save();
             //todo: a visszatérési értékek kidolgozása
 
             return new RepositoryResponse<CreateUserResponse>();
