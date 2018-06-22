@@ -132,10 +132,13 @@
     <Compile Include="Repository\Models\UpdateUserResponse.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\AdhrPropertyViewModel.cs" />
+    <Compile Include="ViewModels\AdhrUserUpdateRequest.cs" />
     <Compile Include="ViewModels\AdhrUserViewModel.cs" />
     <Compile Include="ViewModels\AdhrValueViewModel.cs" />
     <Compile Include="ViewModels\Common\AdhrCommand.cs" />
+    <Compile Include="ViewModels\Common\AdhrEventArgs.cs" />
     <Compile Include="ViewModels\Common\AdhrObservableCollection.cs" />
+    <Compile Include="ViewModels\Common\AdhrUserCollection.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\Common\ViewModelBase.cs" />
     <Compile Include="ViewModels\Settings\SettingsViewmodel.cs" />

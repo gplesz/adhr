@@ -43,14 +43,37 @@ namespace AdHr.ViewModels
                 , AdHr.Properties.Settings.Default.Password);
 
             var users = repository.GetList();
-            AdhrUsers = mapper.Map<ObservableCollection<AdhrUserViewModel>>(users.Data);
+            AdhrUsers = mapper.Map<AdhrUserCollection>(users.Data);
         }
 
-        private ObservableCollection<AdhrUserViewModel> _adhrUsers;
-        public ObservableCollection<AdhrUserViewModel> AdhrUsers
+        private AdhrUserCollection _adhrUsers;
+        public AdhrUserCollection AdhrUsers
         {
             get { return _adhrUsers; }
-            set { SetProperty(value, ref _adhrUsers); }
+            set
+            {
+                if (AdhrUsers != null)
+                {
+                    AdhrUsers.AdhrUserDeleted -= AdhrUsers_AdhrUserDeleted;
+                    AdhrUsers.AdhrUserUpdated -= AdhrUsers_AdhrUserUpdated;
+                }
+                SetProperty(value, ref _adhrUsers);
+                if (AdhrUsers != null)
+                {
+                    AdhrUsers.AdhrUserDeleted += AdhrUsers_AdhrUserDeleted;
+                    AdhrUsers.AdhrUserUpdated += AdhrUsers_AdhrUserUpdated;
+                }
+            }
+        }
+
+        private void AdhrUsers_AdhrUserUpdated(object sender, AdhrEventArgs<AdhrUserUpdateRequest> e)
+        {
+            var result = repository.Update(e.Dto.Sid, e.Dto.Properties);
+        }
+
+        private void AdhrUsers_AdhrUserDeleted(object sender, AdhrEventArgs<string> e)
+        {
+            var result = repository.Delete(e.Dto);
         }
 
         private AdhrUserViewModel _selectedUser;

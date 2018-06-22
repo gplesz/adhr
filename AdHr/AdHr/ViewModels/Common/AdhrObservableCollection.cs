@@ -10,7 +10,7 @@ namespace AdHr.ViewModels.Common
         where T : INotifyPropertyChanged
     {
         public new event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -22,6 +22,11 @@ namespace AdHr.ViewModels.Common
 
         private void ObservableCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (e.Action==NotifyCollectionChangedAction.Reset)
+            { //todo: törölni kell az eseményvezérlőket
+
+            }
+
             if (e.OldItems != null)
             {
                 foreach (var item in e.OldItems)

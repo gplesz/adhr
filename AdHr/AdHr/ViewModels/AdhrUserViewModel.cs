@@ -25,6 +25,18 @@ namespace AdHr.ViewModels
             );
         }
 
+        public event EventHandler<AdhrEventArgs<string>> AdhrUserDeleted;
+        private void OnAdhrUserDelete(string sid)
+        {
+            AdhrUserDeleted?.Invoke(this, new AdhrEventArgs<string>(sid));
+        }
+
+        public event EventHandler<AdhrEventArgs<AdhrUserUpdateRequest>> AdhrUserUpdated;
+        private void OnAdhrUserUpdate(string sid, IDictionary<string, string> properties)
+        {
+            AdhrUserUpdated?.Invoke(this, new AdhrEventArgs<AdhrUserUpdateRequest>(new AdhrUserUpdateRequest(sid, properties)));
+        }
+
         private readonly ICommand _updateCommand;
         public ICommand UpdateCommand { get { return _updateCommand; } }
 
@@ -112,16 +124,16 @@ namespace AdHr.ViewModels
 
         private void Delete()
         {
-            Debug.WriteLine($"Delete: {Name}");
+            OnAdhrUserDelete(Sid.Value);
         }
 
         private void Update()
         {
-            Debug.WriteLine($"Update: {Name}");
-            foreach (var item in Properties.Where(x => x.Value != x.OriginalValue))
-            {
-                Debug.WriteLine($"{item.OriginalValue}->{item.Value}");
-            }
+            var propertiesToUpdate = Properties.Where(x => x.Value != x.OriginalValue)
+                                               .ToList()
+                                               .ToDictionary(x=>x.Name, x=>x.Value);
+
+            OnAdhrUserUpdate(Sid.Value, propertiesToUpdate);
         }
     }
 }

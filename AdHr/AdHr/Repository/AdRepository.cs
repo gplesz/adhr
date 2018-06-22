@@ -71,38 +71,99 @@ namespace AdHr.Repository
             }
         }
 
-        public RepositoryResponse<ReadUserResponse> Update(string sid, string propertyName, string propertyValue)
+        public RepositoryResponse<ReadUserResponse> Update(string sid, IDictionary<string, string> properties)
         {
-            using (var userPrincipal = new UserPrincipal(adContext))
+            try
             {
-                using (var search = new PrincipalSearcher(userPrincipal))
+                var user = UserPrincipal.FindByIdentity(adContext, sid);
+                using (var o = (DirectoryEntry)user.GetUnderlyingObject())
                 {
-                    var user = search.FindAll()
-                                     .Cast<UserPrincipal>()
-                                     .FirstOrDefault(x => x.Sid.Value.Equals(sid, StringComparison.OrdinalIgnoreCase));
-
-                    //todo: a módosítás
-                    return new RepositoryResponse<ReadUserResponse>();
+                    foreach (var property in properties)
+                    {
+                        o.Properties[property.Key].Value = property.Value;
+                    }
+                    o.CommitChanges();
                 }
+
+                var response = new RepositoryResponse<ReadUserResponse>
+                {
+                    HasSuccess = true
+                };
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var response = new RepositoryResponse<ReadUserResponse>
+                {
+                    Message = ex.Message,
+                    HasSuccess = false
+                };
+                return response;
             }
         }
 
-        public RepositoryResponse<IReadOnlyCollection<ReadUserResponse>> GetList(Expression<Func<ReadUserResponse, bool>> filter = null, 
+        public RepositoryResponse<DeleteUserResponse> Delete(string sid)
+        {
+            try
+            {
+                var user = UserPrincipal.FindByIdentity(adContext, sid);
+                if (user != null)
+                {
+                    var responseNotFound = new RepositoryResponse<DeleteUserResponse>
+                    {
+                        NotFound = true
+                    };
+                    return responseNotFound;
+                }
+                user.Delete();
+                var response = new RepositoryResponse<DeleteUserResponse>
+                {
+                    HasSuccess = true
+                };
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var response = new RepositoryResponse<DeleteUserResponse>
+                {
+                    Message = ex.Message,
+                    HasSuccess = false
+                };
+                return response;
+            }
+        }
+
+        public RepositoryResponse<IReadOnlyCollection<ReadUserResponse>> GetList(Expression<Func<ReadUserResponse, bool>> filter = null,
                                                                                                                         int skip = 0, int take = 20)
         {
-            using (var userPrincipal = new UserPrincipal(adContext))
+            try
             {
-                var search = new PrincipalSearcher(userPrincipal);
-                var response = new List<ReadUserResponse>();
-
-                foreach (var up in search.FindAll())
+                using (var userPrincipal = new UserPrincipal(adContext))
                 {
-                    response.Add(GetUserInfo(up));
+                    var search = new PrincipalSearcher(userPrincipal);
+                    var responseList = new List<ReadUserResponse>();
+                    var searchResult = search.FindAll();
+                    foreach (var up in searchResult)
+                    {
+                        responseList.Add(GetUserInfo(up));
+                    }
+                    return new RepositoryResponse<IReadOnlyCollection<ReadUserResponse>>(
+                                new ReadOnlyCollection<ReadUserResponse>(responseList))
+                    {
+                        HasSuccess = true
+                    };
                 }
-
-                return new RepositoryResponse<IReadOnlyCollection<ReadUserResponse>>(
-                            new ReadOnlyCollection<ReadUserResponse>(response));
             }
+            catch (Exception ex)
+            {
+                var response = new RepositoryResponse<IReadOnlyCollection<ReadUserResponse>>
+                {
+                    Message = ex.Message,
+                    HasSuccess = false
+                };
+                return response;
+            }
+
         }
 
         private ReadUserResponse GetUserInfo(Principal up)
