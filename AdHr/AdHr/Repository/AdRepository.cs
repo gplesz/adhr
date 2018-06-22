@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Linq.Expressions;
-using AutoMapper;
-using AdHr.Profiles;
 using System.Collections.ObjectModel;
 using System.Threading;
-using System.Security.Principal;
 using System.DirectoryServices.ActiveDirectory;
 using AdHr.Repository.Models;
 
@@ -21,7 +16,6 @@ namespace AdHr.Repository
         //mivel ez IDisposable, ezért nekünk is annak kell lennünk
         private readonly PrincipalContext adContext = null;
         private readonly DirectoryContext directoryContext;
-        private IMapper mapper;
 
         //jelzi, hogy lefutott-e már a Dispose
         private int IsDisposed=0;

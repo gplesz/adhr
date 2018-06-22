@@ -4,15 +4,21 @@ using AdHr.ViewModels.Common;
 using AdHr.Views.AdhrUser;
 using AdHr.Views.Properties;
 using AutoMapper;
+using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Windows.Input;
 
 namespace AdHr.ViewModels
 {
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase, IDisposable
     {
+        //mivel ez IDisposable, ezért nekünk is annak kell lennünk
         private AdRepository repository;
         private readonly IMapper mapper;
+
+        //jelzi, hogy lefutott-e már a Dispose
+        private int IsDisposed = 0;
 
         public MainViewModel()
         {
@@ -47,24 +53,16 @@ namespace AdHr.ViewModels
             set { SetProperty(value, ref _adhrUsers); }
         }
 
-
-        private ObservableCollection<AdhrPropertyViewModel> _selectedUserProperties;
-        public ObservableCollection<AdhrPropertyViewModel> SelectedUserProperties
+        private AdhrUserViewModel _selectedUser;
+        public AdhrUserViewModel SelectedUser
         {
-            get { return _selectedUserProperties; }
-            set { SetProperty(value, ref _selectedUserProperties); }
-        }
-
-        private ObservableCollection<AdhrValueViewModel> _selectedUserSelectedProperty;
-        public ObservableCollection<AdhrValueViewModel> SelectedUserSelectedProperty
-        {
-            get { return _selectedUserSelectedProperty; }
-            set { SetProperty(value, ref _selectedUserSelectedProperty); }
+            get { return _selectedUser; }
+            set { SetProperty(value, ref _selectedUser); }
         }
 
         public string Version
         {
-            get { return $"Version: {ThisAssembly.Git.SemVer.Major + "." + ThisAssembly.Git.SemVer.Minor + "." + ThisAssembly.Git.SemVer.Patch + ".0"}"; }
+            get { return $"{ThisAssembly.Git.SemVer.Major + "." + ThisAssembly.Git.SemVer.Minor + "." + ThisAssembly.Git.SemVer.Patch + ".0"}"; }
         }
 
         private ICommand _createCommand;
@@ -99,6 +97,37 @@ namespace AdHr.ViewModels
                 AdHr.Properties.Settings.Default.Reload();
             }
         }
+
+        #region IDisposable implementation
+        ~MainViewModel()
+        {
+            Dispose(false);
+        }
+
+        private void Dispose(bool isDispose)
+        {
+            if (Interlocked.Exchange(ref IsDisposed, 1) == 1)
+            {
+                throw new ObjectDisposedException(nameof(AdRepository));
+            }
+
+            if (isDispose)
+            {
+                if (repository != null)
+                {
+                    repository.Dispose();
+                    //todo: mivel ez readonly, nem tudom lenullázni
+                    //adContext = null;
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion IDisposable implementation
 
     }
 }

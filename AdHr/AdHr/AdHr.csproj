@@ -39,6 +39,9 @@
     <Reference Include="AutoMapper, Version=7.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.7.0.0\lib\net45\AutoMapper.dll</HintPath>
     </Reference>
+    <Reference Include="FontAwesome.WPF, Version=4.7.0.37774, Culture=neutral, PublicKeyToken=0758b07a11a4f466, processorArchitecture=MSIL">
+      <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
+    </Reference>
     <Reference Include="LDAPLibrary, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LDAPLibrary.3.4.1\lib\net45\LDAPLibrary.dll</HintPath>
     </Reference>
@@ -117,6 +120,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="GlobalStrings.cs" />
     <Compile Include="Repository\Models\AdhrValue.cs" />
     <Compile Include="Repository\Models\RepositoryResponse.cs" />
@@ -131,20 +135,12 @@
     <Compile Include="ViewModels\AdhrUserViewModel.cs" />
     <Compile Include="ViewModels\AdhrValueViewModel.cs" />
     <Compile Include="ViewModels\Common\AdhrCommand.cs" />
+    <Compile Include="ViewModels\Common\AdhrObservableCollection.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\Common\ViewModelBase.cs" />
     <Compile Include="ViewModels\Settings\SettingsViewmodel.cs" />
     <Compile Include="Views\AdhrUser\CreateWindow.xaml.cs">
       <DependentUpon>CreateWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\AdhrUser\DeleteWindow.xaml.cs">
-      <DependentUpon>DeleteWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\AdhrUser\ReadWindow.xaml.cs">
-      <DependentUpon>ReadWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\AdhrUser\UpdateWindow.xaml.cs">
-      <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Properties\PropertiesWindow.xaml.cs">
       <DependentUpon>PropertiesWindow.xaml</DependentUpon>
@@ -162,18 +158,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\AdhrUser\CreateWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AdhrUser\DeleteWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AdhrUser\ReadWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AdhrUser\UpdateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

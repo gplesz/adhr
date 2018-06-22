@@ -3,6 +3,8 @@ using AdHr.Views.AdhrUser;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
@@ -16,50 +18,18 @@ namespace AdHr.ViewModels
         public AdhrUserViewModel()
         {
             _updateCommand = new AdhrCommand(
-                (param) => { Update(); }
+                 (param) => { Update(); }, (user) => { return IsDirty; }
             );
             _deleteCommand = new AdhrCommand(
                 (param) => { Delete(); }
             );
-            _readCommand = new AdhrCommand(
-                (param) => { Read(); }
-            );
         }
-
-        private readonly ICommand _readCommand;
-        public ICommand ReadCommand { get { return _readCommand; } }
 
         private readonly ICommand _updateCommand;
         public ICommand UpdateCommand { get { return _updateCommand; } }
 
         private readonly ICommand _deleteCommand;
         public ICommand DeleteCommand { get { return _deleteCommand; } }
-
-        private void Read()
-        {
-            var readWindow = new ReadWindow(this);
-            readWindow.ShowDialog();
-        }
-
-        private void Delete()
-        {
-            var deleteWindow = new DeleteWindow(this);
-            var result = deleteWindow.ShowDialog();
-            if (result == true)
-            {
-
-            }
-        }
-
-        private void Update()
-        {
-            var updateWindow = new UpdateWindow(this);
-            var result = updateWindow.ShowDialog();
-            if (result == true)
-            {
-
-            }
-        }
 
         private string _displayName;
         public string DisplayName
@@ -108,20 +78,50 @@ namespace AdHr.ViewModels
             set { SetProperty(value, ref _sid); }
         }
 
-        private ObservableCollection<AdhrPropertyViewModel> _properties;
-        public ObservableCollection<AdhrPropertyViewModel> Properties
+        private AdhrObservableCollection<AdhrPropertyViewModel> _properties;
+        public AdhrObservableCollection<AdhrPropertyViewModel> Properties
         {
             get { return _properties; }
-            set { SetProperty(value, ref _properties); }
+            set
+            {
+                if (Properties != null)
+                {
+                    Properties.PropertyChanged -= Properties_PropertyChanged;
+                }
+                SetProperty(value, ref _properties);
+                if (Properties!=null)
+                {
+                    Properties.PropertyChanged += Properties_PropertyChanged;
+                }
+            }
         }
 
-        private ObservableCollection<AdhrValueViewModel> _selectedProperty;
-        public ObservableCollection<AdhrValueViewModel> SelectedProperty
+        private void Properties_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(IsDirty));
+        }
+
+        private AdhrPropertyViewModel _selectedProperty;
+        public AdhrPropertyViewModel SelectedProperty
         {
             get { return _selectedProperty; }
             set { SetProperty(value, ref _selectedProperty); }
         }
 
+        public bool IsDirty { get { return Properties.Any(x => x.Value != x.OriginalValue); } }
 
+        private void Delete()
+        {
+            Debug.WriteLine($"Delete: {Name}");
+        }
+
+        private void Update()
+        {
+            Debug.WriteLine($"Update: {Name}");
+            foreach (var item in Properties.Where(x => x.Value != x.OriginalValue))
+            {
+                Debug.WriteLine($"{item.OriginalValue}->{item.Value}");
+            }
+        }
     }
 }
