@@ -28,8 +28,16 @@ namespace AdHr.Repository
 
         public AdRepository(string address)
         {
-            adContext = new PrincipalContext(ContextType.Domain, address);
-            directoryContext = new DirectoryContext(DirectoryContextType.DirectoryServer, address);
+            if (string.IsNullOrEmpty(address))
+            {
+                adContext = new PrincipalContext(ContextType.Domain);
+                directoryContext = new DirectoryContext(DirectoryContextType.DirectoryServer);
+            }
+            else
+            {
+                adContext = new PrincipalContext(ContextType.Domain, address);
+                directoryContext = new DirectoryContext(DirectoryContextType.DirectoryServer, address);
+            }
         }
 
         public AdRepository(string address, string userName, string password)

@@ -58,5 +58,17 @@ namespace AdHr.Properties {
                 this["Password"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int AuthType {
+            get {
+                return ((int)(this["AuthType"]));
+            }
+            set {
+                this["AuthType"] = value;
+            }
+        }
     }
 }

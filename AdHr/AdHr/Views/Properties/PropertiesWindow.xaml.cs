@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdHr.ViewModels.Settings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,10 @@ namespace AdHr.Views.Properties
     /// </summary>
     public partial class PropertiesWindow : Window
     {
-        public PropertiesWindow()
+        public PropertiesWindow(SettingsViewModel model)
         {
             InitializeComponent();
+            DataContext = model;
         }
 
         private void PropertiesSave_Click(object sender, RoutedEventArgs e)

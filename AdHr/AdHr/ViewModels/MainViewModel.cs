@@ -1,6 +1,7 @@
 ﻿using AdHr.Profiles;
 using AdHr.Repository;
 using AdHr.ViewModels.Common;
+using AdHr.ViewModels.Settings;
 using AdHr.Views.AdhrUser;
 using AdHr.Views.Properties;
 using AutoMapper;
@@ -37,10 +38,23 @@ namespace AdHr.ViewModels
 
         private void refreshData()
         {
-            repository = new AdRepository(
-                AdHr.Properties.Settings.Default.AdServer
-                , AdHr.Properties.Settings.Default.UserName
-                , AdHr.Properties.Settings.Default.Password);
+            var authType = (AuthTypes)AdHr.Properties.Settings.Default.AuthType;
+            switch (authType)
+            {
+                case AuthTypes.WindowsAuthentication:
+                    repository = new AdRepository(
+                        AdHr.Properties.Settings.Default.AdServer
+                        );
+                    break;
+                case AuthTypes.NameAndPassword:
+                    repository = new AdRepository(
+                        AdHr.Properties.Settings.Default.AdServer
+                        , AdHr.Properties.Settings.Default.UserName
+                        , AdHr.Properties.Settings.Default.Password);
+                    break;
+                default:
+                    break;
+            }
 
             var users = repository.GetList();
             AdhrUsers = mapper.Map<AdhrUserCollection>(users.Data);
@@ -114,15 +128,12 @@ namespace AdHr.ViewModels
 
         private void Properties()
         {
-            var propertiesWindow = new PropertiesWindow();
+            var model = new SettingsViewModel();
+            var propertiesWindow = new PropertiesWindow(model);
             var result = propertiesWindow.ShowDialog();
             if (result == true)
             {
-                AdHr.Properties.Settings.Default.Save();
-            }
-            else
-            {
-                AdHr.Properties.Settings.Default.Reload();
+                model.Save();
             }
         }
 
