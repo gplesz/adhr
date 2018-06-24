@@ -16,6 +16,7 @@
         <c:BooleanToVisibilityConverter x:Key="booleanToVisibility" 
                                         TriggerValue="False" 
                                         IsHidden="True" />
+        <c:ErrorMessageToVisibilityConverter x:Key="errorMessageToVisibilityConverter"  />
         <Style x:Key="BodyContentDataGridCentering"
                TargetType="{x:Type DataGridCell}">
             <Setter Property="Template">
@@ -147,6 +148,11 @@
                 </Button.Content>
             </Button>
         </StackPanel>
-
+        <TextBlock x:Name="ErrorMessage"
+                   Foreground="Red"
+                   Grid.Row="2"
+                   Grid.Column="0"
+                   Text="{Binding ErrorMessage}"
+                   Visibility="{Binding ErrorMessage, Converter={StaticResource errorMessageToVisibilityConverter}}" />
     </Grid>
 </Window>

@@ -38,26 +38,40 @@ namespace AdHr.ViewModels
 
         private void refreshData()
         {
+            ErrorMessage = string.Empty;
             var authType = (AuthTypes)AdHr.Properties.Settings.Default.AuthType;
-            switch (authType)
+            try
             {
-                case AuthTypes.WindowsAuthentication:
-                    repository = new AdRepository(
-                        AdHr.Properties.Settings.Default.AdServer
-                        );
-                    break;
-                case AuthTypes.NameAndPassword:
-                    repository = new AdRepository(
-                        AdHr.Properties.Settings.Default.AdServer
-                        , AdHr.Properties.Settings.Default.UserName
-                        , AdHr.Properties.Settings.Default.Password);
-                    break;
-                default:
-                    break;
+                switch (authType)
+                {
+                    case AuthTypes.WindowsAuthentication:
+                        repository = new AdRepository(
+                            AdHr.Properties.Settings.Default.AdServer
+                            );
+                        break;
+                    case AuthTypes.NameAndPassword:
+                        repository = new AdRepository(
+                            AdHr.Properties.Settings.Default.AdServer
+                            , AdHr.Properties.Settings.Default.UserName
+                            , AdHr.Properties.Settings.Default.Password);
+                        break;
+                    default:
+                        break;
+                }
+                var users = repository.GetList();
+                if (users.HasSuccess)
+                {
+                    AdhrUsers = mapper.Map<AdhrUserCollection>(users.Data);
+                }
+                else
+                {
+                    ErrorMessage = users.Message;
+                }
             }
-
-            var users = repository.GetList();
-            AdhrUsers = mapper.Map<AdhrUserCollection>(users.Data);
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
         }
 
         private AdhrUserCollection _adhrUsers;
@@ -83,11 +97,27 @@ namespace AdHr.ViewModels
         private void AdhrUsers_AdhrUserUpdated(object sender, AdhrEventArgs<AdhrUserUpdateRequest> e)
         {
             var result = repository.Update(e.Dto.Sid, e.Dto.Properties);
+            if (result.HasSuccess)
+            {
+                ErrorMessage = string.Empty;
+            }
+            else
+            {
+                ErrorMessage = result.Message;
+            }
         }
 
         private void AdhrUsers_AdhrUserDeleted(object sender, AdhrEventArgs<string> e)
         {
             var result = repository.Delete(e.Dto);
+            if (result.HasSuccess)
+            {
+                ErrorMessage = string.Empty;
+            }
+            else
+            {
+                ErrorMessage = result.Message;
+            }
         }
 
         private AdhrUserViewModel _selectedUser;
@@ -95,6 +125,13 @@ namespace AdHr.ViewModels
         {
             get { return _selectedUser; }
             set { SetProperty(value, ref _selectedUser); }
+        }
+
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set { SetProperty(value, ref _errorMessage); }
         }
 
         public string Version
@@ -122,7 +159,15 @@ namespace AdHr.ViewModels
             var result = readWindow.ShowDialog();
             if (result==true)
             {
-                repository.Create(createdData.SamAccountName, createdData.Description, createdData.DisplayName);
+                var result2 = repository.Create(createdData.SamAccountName, createdData.Description, createdData.DisplayName);
+                if (result2.HasSuccess)
+                {
+                    ErrorMessage = string.Empty;
+                }
+                else
+                {
+                    ErrorMessage = result2.Message;
+                }
             }
         }
 

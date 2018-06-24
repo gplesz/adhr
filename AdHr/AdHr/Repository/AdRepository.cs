@@ -49,36 +49,54 @@ namespace AdHr.Repository
         public RepositoryResponse<CreateUserResponse> Create(string login, string description, string displayName)
         {
             //todo: request dto-t készíteni
-            //todo: létrehozást implementálni
-
-            //var user = new UserPrincipal(adContext)
-            //{
-            //    UserPrincipalName = login,
-            //    Enabled = true,
-            //    Description = description,
-            //    DisplayName = displayName
-            //};
-
-            //user.SetPassword(password);
-            //user.Save();
-            //todo: a visszatérési értékek kidolgozása
-
-            return new RepositoryResponse<CreateUserResponse>();
+            try
+            {
+                var user = new UserPrincipal(adContext)
+                {
+                    SamAccountName = login,
+                    DisplayName = displayName,
+                    Description = description
+                };
+                user.Save();
+                return new RepositoryResponse<CreateUserResponse>
+                {
+                    HasSuccess = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new RepositoryResponse<CreateUserResponse>
+                {
+                    HasSuccess = false,
+                    Message = ex.Message
+                };
+            }
         }
 
         public RepositoryResponse<ReadUserResponse> Read(string sid)
         {
-            using (var userPrincipal = new UserPrincipal(adContext))
+            try
             {
-                using (var search = new PrincipalSearcher(userPrincipal))
+                using (var userPrincipal = new UserPrincipal(adContext))
                 {
-                    var user = search.FindAll()
-                                     .Cast<UserPrincipal>()
-                                     .FirstOrDefault(x => x.Sid.Value.Equals(sid, StringComparison.OrdinalIgnoreCase));
+                    using (var search = new PrincipalSearcher(userPrincipal))
+                    {
+                        var user = search.FindAll()
+                                         .Cast<UserPrincipal>()
+                                         .FirstOrDefault(x => x.Sid.Value.Equals(sid, StringComparison.OrdinalIgnoreCase));
 
-                    var response = GetUserInfo(user);
-                    return new RepositoryResponse<ReadUserResponse>(response);
+                        var response = GetUserInfo(user);
+                        return new RepositoryResponse<ReadUserResponse>(response) { HasSuccess = true };
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                return new RepositoryResponse<ReadUserResponse>
+                {
+                    HasSuccess = false,
+                    Message = ex.Message
+                };
             }
         }
 
