@@ -33,33 +33,6 @@ namespace AdHr
             {
                 return (MainViewModel)DataContext;
             }
-                
-        }
-
-        private void UserGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var grid = sender as DataGrid;
-            if (grid.SelectedValue is AdhrUserViewModel selectedUser)
-            {
-                ViewModel.SelectedUserProperties = new ObservableCollection<AdhrPropertyViewModel>(selectedUser.Properties);
-            }
-            else
-            {
-                ViewModel.SelectedUserProperties = new ObservableCollection<AdhrPropertyViewModel>();
-            }
-        }
-
-        private void PropertyGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var grid = sender as DataGrid;
-            if (grid.SelectedValue is AdhrPropertyViewModel selectedProperty)
-            {
-                ViewModel.SelectedUserSelectedProperty = new ObservableCollection<AdhrValueViewModel>(selectedProperty.Values);
-            }
-            else
-            {
-                ViewModel.SelectedUserSelectedProperty = new ObservableCollection<AdhrValueViewModel>();
-            }
         }
     }
 }

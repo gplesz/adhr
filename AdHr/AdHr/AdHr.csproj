@@ -13,6 +13,8 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,6 +38,9 @@
   <ItemGroup>
     <Reference Include="AutoMapper, Version=7.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.7.0.0\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="FontAwesome.WPF, Version=4.7.0.37774, Culture=neutral, PublicKeyToken=0758b07a11a4f466, processorArchitecture=MSIL">
+      <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
     </Reference>
     <Reference Include="LDAPLibrary, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LDAPLibrary.3.4.1\lib\net45\LDAPLibrary.dll</HintPath>
@@ -115,37 +120,33 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\AdhrUser.cs" />
-    <Compile Include="Models\AdhrValue.cs" />
-    <Compile Include="Models\LDAP\CreateLdapUserResponse.cs" />
-    <Compile Include="Models\LDAP\DeleteLdapUserResponse.cs" />
-    <Compile Include="Models\LDAP\ReadLdapUserResponse.cs" />
-    <Compile Include="Models\ResponseBase.cs" />
-    <Compile Include="Models\LDAP\UpdateLdapUserResponse.cs" />
-    <Compile Include="Profiles\AdUserProfile.cs" />
-    <Compile Include="Profiles\LdapUserProfile.cs" />
+    <Compile Include="Converters\ErrorMessageToVisibilityConverter.cs" />
+    <Compile Include="Converters\AuthTypeToVisibilityConverter.cs" />
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
+    <Compile Include="GlobalStrings.cs" />
+    <Compile Include="Repository\Models\AdhrValue.cs" />
+    <Compile Include="Repository\Models\RepositoryResponse.cs" />
     <Compile Include="Profiles\ViewModelProfile.cs" />
     <Compile Include="Repository\AdRepository.cs" />
-    <Compile Include="Repository\LdapRepository.cs" />
+    <Compile Include="Repository\Models\CreateUserResponse.cs" />
+    <Compile Include="Repository\Models\DeleteUserResponse.cs" />
+    <Compile Include="Repository\Models\ReadUserResponse.cs" />
+    <Compile Include="Repository\Models\UpdateUserResponse.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\AdhrPropertyViewModel.cs" />
+    <Compile Include="ViewModels\AdhrUserUpdateRequest.cs" />
     <Compile Include="ViewModels\AdhrUserViewModel.cs" />
     <Compile Include="ViewModels\AdhrValueViewModel.cs" />
     <Compile Include="ViewModels\Common\AdhrCommand.cs" />
+    <Compile Include="ViewModels\Common\AdhrEventArgs.cs" />
+    <Compile Include="ViewModels\Common\AdhrObservableCollection.cs" />
+    <Compile Include="ViewModels\Common\AdhrUserCollection.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\Common\ViewModelBase.cs" />
+    <Compile Include="ViewModels\Settings\AuthTypes.cs" />
     <Compile Include="ViewModels\Settings\SettingsViewmodel.cs" />
     <Compile Include="Views\AdhrUser\CreateWindow.xaml.cs">
       <DependentUpon>CreateWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\AdhrUser\DeleteWindow.xaml.cs">
-      <DependentUpon>DeleteWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\AdhrUser\ReadWindow.xaml.cs">
-      <DependentUpon>ReadWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\AdhrUser\UpdateWindow.xaml.cs">
-      <DependentUpon>UpdateWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Properties\PropertiesWindow.xaml.cs">
       <DependentUpon>PropertiesWindow.xaml</DependentUpon>
@@ -163,18 +164,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\AdhrUser\CreateWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AdhrUser\DeleteWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AdhrUser\ReadWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AdhrUser\UpdateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -213,8 +202,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\AD\" />
     <Folder Include="Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\GitInfo.2.0.11\build\GitInfo.targets" Condition="Exists('..\packages\GitInfo.2.0.11\build\GitInfo.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\GitInfo.2.0.11\build\GitInfo.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\GitInfo.2.0.11\build\GitInfo.targets'))" />
+  </Target>
 </Project>

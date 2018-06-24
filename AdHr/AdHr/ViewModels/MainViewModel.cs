@@ -1,25 +1,25 @@
-﻿using AdHr.Models;
-using AdHr.Profiles;
+﻿using AdHr.Profiles;
 using AdHr.Repository;
 using AdHr.ViewModels.Common;
+using AdHr.ViewModels.Settings;
 using AdHr.Views.AdhrUser;
 using AdHr.Views.Properties;
 using AutoMapper;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Input;
 
 namespace AdHr.ViewModels
 {
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase, IDisposable
     {
+        //mivel ez IDisposable, ezért nekünk is annak kell lennünk
         private AdRepository repository;
         private readonly IMapper mapper;
+
+        //jelzi, hogy lefutott-e már a Dispose
+        private int IsDisposed = 0;
 
         public MainViewModel()
         {
@@ -38,35 +38,105 @@ namespace AdHr.ViewModels
 
         private void refreshData()
         {
-            repository = new AdRepository(
-                AdHr.Properties.Settings.Default.AdServer
-                , AdHr.Properties.Settings.Default.UserName
-                , AdHr.Properties.Settings.Default.Password);
-
-            var users = repository.GetList();
-            AdhrUsers = mapper.Map<ObservableCollection<AdhrUserViewModel>>(users.Data);
+            ErrorMessage = string.Empty;
+            var authType = (AuthTypes)AdHr.Properties.Settings.Default.AuthType;
+            try
+            {
+                switch (authType)
+                {
+                    case AuthTypes.WindowsAuthentication:
+                        repository = new AdRepository(
+                            AdHr.Properties.Settings.Default.AdServer
+                            );
+                        break;
+                    case AuthTypes.NameAndPassword:
+                        repository = new AdRepository(
+                            AdHr.Properties.Settings.Default.AdServer
+                            , AdHr.Properties.Settings.Default.UserName
+                            , AdHr.Properties.Settings.Default.Password);
+                        break;
+                    default:
+                        break;
+                }
+                var users = repository.GetList();
+                if (users.HasSuccess)
+                {
+                    AdhrUsers = mapper.Map<AdhrUserCollection>(users.Data);
+                }
+                else
+                {
+                    ErrorMessage = users.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
         }
 
-        private ObservableCollection<AdhrUserViewModel> _adhrUsers;
-        public ObservableCollection<AdhrUserViewModel> AdhrUsers
+        private AdhrUserCollection _adhrUsers;
+        public AdhrUserCollection AdhrUsers
         {
             get { return _adhrUsers; }
-            set { SetProperty(value, ref _adhrUsers); }
+            set
+            {
+                if (AdhrUsers != null)
+                {
+                    AdhrUsers.AdhrUserDeleted -= AdhrUsers_AdhrUserDeleted;
+                    AdhrUsers.AdhrUserUpdated -= AdhrUsers_AdhrUserUpdated;
+                }
+                SetProperty(value, ref _adhrUsers);
+                if (AdhrUsers != null)
+                {
+                    AdhrUsers.AdhrUserDeleted += AdhrUsers_AdhrUserDeleted;
+                    AdhrUsers.AdhrUserUpdated += AdhrUsers_AdhrUserUpdated;
+                }
+            }
         }
 
-
-        private ObservableCollection<AdhrPropertyViewModel> _selectedUserProperties;
-        public ObservableCollection<AdhrPropertyViewModel> SelectedUserProperties
+        private void AdhrUsers_AdhrUserUpdated(object sender, AdhrEventArgs<AdhrUserUpdateRequest> e)
         {
-            get { return _selectedUserProperties; }
-            set { SetProperty(value, ref _selectedUserProperties); }
+            var result = repository.Update(e.Dto.Sid, e.Dto.Properties);
+            if (result.HasSuccess)
+            {
+                ErrorMessage = string.Empty;
+            }
+            else
+            {
+                ErrorMessage = result.Message;
+            }
         }
 
-        private ObservableCollection<AdhrValueViewModel> _selectedUserSelectedProperty;
-        public ObservableCollection<AdhrValueViewModel> SelectedUserSelectedProperty
+        private void AdhrUsers_AdhrUserDeleted(object sender, AdhrEventArgs<string> e)
         {
-            get { return _selectedUserSelectedProperty; }
-            set { SetProperty(value, ref _selectedUserSelectedProperty); }
+            var result = repository.Delete(e.Dto);
+            if (result.HasSuccess)
+            {
+                ErrorMessage = string.Empty;
+            }
+            else
+            {
+                ErrorMessage = result.Message;
+            }
+        }
+
+        private AdhrUserViewModel _selectedUser;
+        public AdhrUserViewModel SelectedUser
+        {
+            get { return _selectedUser; }
+            set { SetProperty(value, ref _selectedUser); }
+        }
+
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set { SetProperty(value, ref _errorMessage); }
+        }
+
+        public string Version
+        {
+            get { return $"{ThisAssembly.Git.SemVer.Major + "." + ThisAssembly.Git.SemVer.Minor + "." + ThisAssembly.Git.SemVer.Patch + ".0"}"; }
         }
 
         private ICommand _createCommand;
@@ -78,29 +148,70 @@ namespace AdHr.ViewModels
         private ICommand _connectCommand;
         public ICommand ConnectCommand { get { return _connectCommand; } }
 
+        //todo: ezt implementálni
+        public bool CanUserCreateContact { get; set; }
+
         private void Create()
         {
-            var readWindow = new CreateWindow();
+            var createdData = new AdhrUserViewModel();
+            //todo a property gyűjteményt kitölteni
+            var readWindow = new CreateWindow(createdData);
             var result = readWindow.ShowDialog();
             if (result==true)
             {
-
+                var result2 = repository.Create(createdData.SamAccountName, createdData.Description, createdData.DisplayName);
+                if (result2.HasSuccess)
+                {
+                    ErrorMessage = string.Empty;
+                }
+                else
+                {
+                    ErrorMessage = result2.Message;
+                }
             }
         }
 
         private void Properties()
         {
-            var propertiesWindow = new PropertiesWindow();
+            var model = new SettingsViewModel();
+            var propertiesWindow = new PropertiesWindow(model);
             var result = propertiesWindow.ShowDialog();
             if (result == true)
             {
-                AdHr.Properties.Settings.Default.Save();
-            }
-            else
-            {
-                AdHr.Properties.Settings.Default.Reload();
+                model.Save();
             }
         }
+
+        #region IDisposable implementation
+        ~MainViewModel()
+        {
+            Dispose(false);
+        }
+
+        private void Dispose(bool isDispose)
+        {
+            if (Interlocked.Exchange(ref IsDisposed, 1) == 1)
+            {
+                throw new ObjectDisposedException(nameof(AdRepository));
+            }
+
+            if (isDispose)
+            {
+                if (repository != null)
+                {
+                    repository.Dispose();
+                    //todo: mivel ez readonly, nem tudom lenullázni
+                    //adContext = null;
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion IDisposable implementation
 
     }
 }

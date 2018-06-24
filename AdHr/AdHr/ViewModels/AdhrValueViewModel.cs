@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace AdHr.ViewModels
 {
+    /// <summary>
+    /// Ez az osztály azért kell, hogy a Binding
+    /// meg tudja hivatkozni az oszlop nevét a listában
+    /// </summary>
     public class AdhrValueViewModel : ViewModelBase
     {
         private string _value;

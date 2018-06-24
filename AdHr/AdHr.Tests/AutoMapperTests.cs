@@ -13,8 +13,6 @@ namespace AdHr.Tests
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<LdapUserProfile>();
-                cfg.AddProfile<AdUserProfile>();
                 cfg.AddProfile<ViewModelProfile>();
             });
 

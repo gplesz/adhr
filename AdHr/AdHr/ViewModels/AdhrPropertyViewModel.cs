@@ -4,7 +4,6 @@ namespace AdHr.ViewModels
 {
     public class AdhrPropertyViewModel : ViewModelBase
     {
-
         private string _name;
         public string Name
         {
@@ -12,11 +11,26 @@ namespace AdHr.ViewModels
             set { SetProperty(value, ref _name); }
         }
 
+        private string _value;
+        public string Value
+        {
+            get { return _value; }
+            set { SetProperty(value, ref _value); }
+        }
+
+        public string OriginalValue { get; private set; }
+
         private ObservableCollection<AdhrValueViewModel> _values;
         public ObservableCollection<AdhrValueViewModel> Values
         {
             get { return _values; }
-            set { SetProperty(value, ref _values); }
+            set
+            {
+                SetProperty(value, ref _values);
+                //todo: egyelőre csak olyan property-t módosítunk, aminek pontosan egy értéke van
+                Value = Values?[0].Value;
+                OriginalValue = Value;
+            }
         }
 
     }

@@ -118,3 +118,45 @@ Telepítenünk kell az [LDAP using AD LDS] szolgáltatást(https://blogs.msdn.mi
 Megyünk az active directory felé:
 
 https://www.nuget.org/packages/System.DirectoryServices.AccountManagement/
+
+ActiveDirectory: a felhasználó jogainak olvasása (írási/olvasási jogosultságok)
+ActiveDirectory: saját property rögzítése, és írhatóvá tétele
+ActiveDirectory: titkárnő tudjon felvinni contact-ot
+
+## Következő cél
+- tesztkörnyezet 
+  - Hr felhasználó alacsony jogosultságokkal
+  - Titkárnő felhasználóra
+    - jogosultság kell, hogy Contact adatot tudjon felvinni
+  - Szükségem van legalább egy olyan adatra az ad-ben, amihez írási jogot adunk a hr felhasználónak
+
+- bejelentkezés választható legyen:
+  - domain+username+password
+  - Windows authentikáció, a bejelentkezett felhanszálót használva
+  - esetleg windows authentikáció + szerver vagy domain név
+
+- A programból csak azokat a mezőket mutassuk meg, amihez a felhasználónak 
+  van írási joga (ehhez le kell tudni kérdezni attributumonként az írási 
+  jogot)
+
+  ```
+  +------------------------+      +------------------------+                  +---------------------------+
+|                        |      |                        |                  |                           |
+| WPF desktop alkalmazás |      |  Repository            |                  |                           |
+|                        |      |                        |                  | Active Directory Server   |
+|                        |      |       CRUD             |                  |                           |
+|                        | +--> |       Create           |                  |                           |
+|                        |      |       Read             |                  |                           |
+|                        |      |       Update           +----------------> |                           |
+|                        |      |       Delete           |                  |                           |
+|                        |      |       List             |                  |                           |
+|                        |      |                        |                  |                           |
+|                        |      |                        |                  |                           |
+|                        |      |                        |                  |                           |
+|                        |      |                        |                  |                           |
+|                        |      |                        |                  |                           |
++------------------------+      +------------------------+                  |                           |
+                                                                            |                           |
+                                                                            +---------------------------+
+
+  ```

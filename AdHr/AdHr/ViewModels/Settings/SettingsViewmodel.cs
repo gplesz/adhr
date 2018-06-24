@@ -1,12 +1,26 @@
-﻿namespace AdHr.ViewModels.Settings
+﻿using System;
+
+namespace AdHr.ViewModels.Settings
 {
     public class SettingsViewModel : ViewModelBase
     {
+        public SettingsViewModel()
+        {
+            Load();
+        }
+
         private string _adServer;
         public string AdServer
         {
             get { return _adServer; }
             set { SetProperty(value, ref _adServer); }
+        }
+
+        private AuthTypes _authType;
+        public AuthTypes AuthType
+        {
+            get { return _authType; }
+            set { SetProperty(value, ref _authType); }
         }
 
         private string _userName;
@@ -21,6 +35,23 @@
         {
             get { return _password; }
             set { SetProperty(value, ref _password); }
+        }
+
+        public void Save()
+        {
+            Properties.Settings.Default.AdServer = AdServer;
+            Properties.Settings.Default.UserName = UserName;
+            Properties.Settings.Default.Password = Password;
+            Properties.Settings.Default.AuthType = (int)AuthType;
+            Properties.Settings.Default.Save();
+        }
+
+        public void Load()
+        {
+            AdServer = Properties.Settings.Default.AdServer;
+            UserName = Properties.Settings.Default.UserName;
+            Password = Properties.Settings.Default.Password;
+            AuthType = (AuthTypes)Properties.Settings.Default.AuthType;
         }
     }
 }
