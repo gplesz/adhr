@@ -139,8 +139,8 @@ ActiveDirectory: titkárnő tudjon felvinni contact-ot
   van írási joga (ehhez le kell tudni kérdezni attributumonként az írási 
   jogot)
 
-  ```
-  +------------------------+      +------------------------+                  +---------------------------+
+ ```
++------------------------+      +------------------------+                  +---------------------------+
 |                        |      |                        |                  |                           |
 | WPF desktop alkalmazás |      |  Repository            |                  |                           |
 |                        |      |                        |                  | Active Directory Server   |
@@ -158,5 +158,4 @@ ActiveDirectory: titkárnő tudjon felvinni contact-ot
 +------------------------+      +------------------------+                  |                           |
                                                                             |                           |
                                                                             +---------------------------+
-
-  ```
+```
