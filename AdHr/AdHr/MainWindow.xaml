@@ -4,111 +4,155 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:AdHr.ViewModels"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:AdHr"
+        xmlns:c="clr-namespace:AdHr.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <c:BooleanToVisibilityConverter x:Key="booleanToVisibility" 
+                                        TriggerValue="False" 
+                                        IsHidden="True" />
+        <c:ErrorMessageToVisibilityConverter x:Key="errorMessageToVisibilityConverter"  />
+        <Style x:Key="BodyContentDataGridCentering"
+               TargetType="{x:Type DataGridCell}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
             <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <GridSplitter Grid.Column="1" Width="5" 
+                          Grid.RowSpan="2"
+                            ResizeBehavior="PreviousAndNext"/>
         <DataGrid x:Name="UserGrid"
                   ItemsSource="{Binding AdhrUsers}"
+                  CellStyle="{StaticResource BodyContentDataGridCentering}"
                   Grid.Row="1"
+                  IsReadOnly="True"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
-                  SelectionChanged="UserGrid_SelectionChanged"
+                  SelectedItem="{Binding SelectedUser}"
+                  IsSynchronizedWithCurrentItem="True"                  
+                  Margin="3"
                   >
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" 
+                <DataGridTextColumn Header="Név" 
                                     Binding="{Binding Name}" />
-                <DataGridTextColumn Header="SamAccountName" 
+                <DataGridTextColumn Header="Felhasználónév" 
                                     Binding="{Binding SamAccountName}" />
-                <DataGridTextColumn Header="DisplayName" 
+                <DataGridTextColumn Header="Megjelenítendő név" 
                                     Width="*"
                                     Binding="{Binding DisplayName}" />
+                <DataGridTemplateColumn Header="">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Padding="5"
+                                        Margin="1"
+                                        Visibility="{Binding IsDirty, Converter={StaticResource booleanToVisibility}}"
+                                        Command="{Binding UpdateCommand}" >
+                                    <Button.Content>
+                                        <fa:ImageAwesome Icon="Edit" 
+                                                         Width="10"
+                                                         Height="10" />
+                                    </Button.Content>
+                                </Button>
+                                <Button Padding="5"
+                                        Margin="1"
+                                        Command="{Binding DeleteCommand}" >
+                                    <Button.Content>
+                                        <fa:ImageAwesome Icon="Trash" 
+                                                         Width="10"
+                                                         Height="10" />
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
-            <DataGrid.RowDetailsTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="{Binding Description}" 
-                                   Grid.Row="0"/>
-                        <TextBlock Text="{Binding DistinguishedName}" 
-                                   Grid.Row="1" />
-                        <StackPanel Grid.Row="2" 
-                                    Orientation="Horizontal">
-                            <Button Content="Update" 
-                                Padding="5"
-                                Margin="10"
-                                Command="{Binding UpdateCommand}" />
-                            <Button Content="Delete" 
-                                Padding="5"
-                                Margin="10"
-                                Command="{Binding DeleteCommand}" />
-                            <Button Content="Read" 
-                                Padding="5"
-                                Margin="10"
-                                Command="{Binding ReadCommand}" />
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </DataGrid.RowDetailsTemplate>
         </DataGrid>
         <DataGrid x:Name="PropertyGrid"
-                  Grid.Row="2" 
-                  ItemsSource="{Binding SelectedUserProperties}"
+                  Grid.Row="1"
+                  Grid.Column="2" 
+                  Margin="3"                  
+                  CellStyle="{StaticResource BodyContentDataGridCentering}"
+                  ItemsSource="{Binding SelectedUser.Properties}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
                   CanUserDeleteRows="False"
-                  SelectionChanged="PropertyGrid_SelectionChanged">
+                  HeadersVisibility="None"
+                  SelectedItem="{Binding SelectedUser.SelectedProperty}"
+                  IsSynchronizedWithCurrentItem="True"                  
+                  >
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" 
-                                    Width="*"
+                <DataGridTextColumn IsReadOnly="True"
+                                    Width="Auto"
                                     Binding="{Binding Name}" />
-            </DataGrid.Columns>
-        </DataGrid>
-        <DataGrid Grid.Column="1" 
-                  Grid.Row="1"
-                  Grid.RowSpan="2"
-                  CanUserAddRows="False"
-                  CanUserDeleteRows="False"
-                  ItemsSource="{Binding SelectedUserSelectedProperty}"
-                  AutoGenerateColumns="False" GridLinesVisibility="Horizontal">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Value" 
-                                    Width="*"
+                <DataGridTextColumn Width="*"
                                     Binding="{Binding Value}" />
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel Orientation="Horizontal">
-            <Button Content="Create" 
+            <Button Content="Új névjegy létrehozása..." 
                 Padding="5"
                 Margin="10"
                 Command="{Binding CreateCommand}" />
-            <Button Content="Properties" 
+            <Button Content="Beállítások" 
                 Padding="5"
                 Margin="10"
                 Command="{Binding PropertiesCommand}" />
-            <Button Content="Connect" 
+            <Button Content="Kapcsolódás" 
                 Padding="5"
                 Margin="10"
                 Command="{Binding ConnectCommand}" />
-
         </StackPanel>
-
+        <Label Content="{Binding Version}"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Right"
+               Grid.Column="2" Grid.Row="0"/>
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Grid.Column="2"
+                    Grid.Row="2"
+                    Margin="1">
+            <Button Padding="5"
+                    Margin="5"
+                    Visibility="{Binding SelectedUser.IsDirty, Converter={StaticResource booleanToVisibility}}"
+                    Command="{Binding SelectedUser.UpdateCommand}" >
+                <Button.Content>
+                    <fa:ImageAwesome Icon="Edit" 
+                                     Width="50"
+                                     Height="50" />
+                </Button.Content>
+            </Button>
+        </StackPanel>
+        <TextBlock x:Name="ErrorMessage"
+                   Foreground="Red"
+                   Grid.Row="2"
+                   Grid.Column="0"
+                   Text="{Binding ErrorMessage}"
+                   Visibility="{Binding ErrorMessage, Converter={StaticResource errorMessageToVisibilityConverter}}" />
     </Grid>
 </Window>

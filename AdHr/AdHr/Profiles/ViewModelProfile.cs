@@ -1,5 +1,6 @@
-﻿using AdHr.Models;
+﻿using AdHr.Repository.Models;
 using AdHr.ViewModels;
+using AdHr.ViewModels.Common;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,6 @@ namespace AdHr.Profiles
                 .ForMember(d => d.Values, o => o.MapFrom(s => s.Value))
                 ;
 
-            //CreateMap<Dictionary<string,IReadOnlyCollection<string>>, ObservableCollection<AdhrPropertyViewModel>>();
-
             var cfg = new MapperConfiguration(c =>
             {
                 c.CreateMap<AdhrValue, AdhrValueViewModel>()
@@ -38,16 +37,16 @@ namespace AdHr.Profiles
             });
             var mapper = cfg.CreateMapper();
 
-            CreateMap<ReadLdapUserResponse, AdhrUserViewModel>()
+            CreateMap<ReadUserResponse, AdhrUserViewModel>()
                 .ForMember(d => d.Properties, o => o.MapFrom(d => ToObservableList(d.Properties, mapper)))
                 ;
 
         }
 
-        private static ObservableCollection<AdhrPropertyViewModel> ToObservableList(Dictionary<string, IReadOnlyCollection<AdhrValue>> list , IMapper mapper)
+        private static AdhrObservableCollection<AdhrPropertyViewModel> ToObservableList(Dictionary<string, IReadOnlyCollection<AdhrValue>> list , IMapper mapper)
         {
             var result = mapper.Map<List<AdhrPropertyViewModel>>(list);
-            var roresult = new ObservableCollection<AdhrPropertyViewModel>(result);
+            var roresult = new AdhrObservableCollection<AdhrPropertyViewModel>(result);
             return roresult;
         }
     }

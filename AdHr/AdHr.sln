@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdHr", "AdHr\AdHr.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdHr.Tests", "AdHr.Tests\AdHr.Tests.csproj", "{32BD16E8-9BB8-4E75-9FF7-BE4F0373EB74}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BUILD", "BUILD", "{60FEE227-0C81-4B66-8EFC-6741EA0BDD70}"
+	ProjectSection(SolutionItems) = preProject
+		Publish.ps1 = Publish.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
