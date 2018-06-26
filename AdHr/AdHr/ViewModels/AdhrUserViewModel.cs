@@ -120,7 +120,14 @@ namespace AdHr.ViewModels
             set { SetProperty(value, ref _selectedProperty); }
         }
 
-        public bool IsDirty { get { return Properties.Any(x => x.Value != x.OriginalValue); } }
+        public bool IsDirty {
+            get
+            {
+                return Properties!=null 
+                    && Properties.Count > 0 
+                    && Properties.Any(x => x.Value != x.OriginalValue);
+            }
+        }
 
         private void Delete()
         {

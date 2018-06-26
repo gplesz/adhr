@@ -7,6 +7,7 @@ using AdHr.Views.Properties;
 using AutoMapper;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Windows.Input;
 
@@ -100,6 +101,18 @@ namespace AdHr.ViewModels
             if (result.HasSuccess)
             {
                 ErrorMessage = string.Empty;
+                //frissíteni az adatokat
+
+                var user = AdhrUsers.Single(x => x.Sid.Value == e.Dto.Sid);
+                //todo: ezt egy kicsit lehetne ügyesíteni
+                //befrissítjük a lementett property-t az originalvalue-ba
+                foreach (var property in user.Properties)
+                {
+                    if (e.Dto.Properties.Keys.Contains(property.Name))
+                    {
+                        property.OriginalValue = e.Dto.Properties[property.Name];
+                    }
+                }
             }
             else
             {
