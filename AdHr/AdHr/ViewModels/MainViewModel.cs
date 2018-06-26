@@ -26,9 +26,7 @@ namespace AdHr.ViewModels
         {
             var config = new MapperConfiguration(cfg => cfg.AddProfile<ViewModelProfile>());
             mapper = config.CreateMapper();
-            _createCommand = new AdhrCommand(
-                (param) => { Create(); }
-            );
+
             _propertiesCommand = new AdhrCommand(
                 (param) => { Properties(); }
             );
@@ -85,14 +83,12 @@ namespace AdHr.ViewModels
             {
                 if (AdhrUsers != null)
                 {
-                    AdhrUsers.AdhrUserDeleted -= AdhrUsers_AdhrUserDeleted;
                     AdhrUsers.AdhrUserUpdated -= AdhrUsers_AdhrUserUpdated;
                     AdhrUsers.AdhrUserPropertyChanged -= AdhrUsers_AdhrUserPropertyChanged;
                 }
                 SetProperty(value, ref _adhrUsers);
                 if (AdhrUsers != null)
                 {
-                    AdhrUsers.AdhrUserDeleted += AdhrUsers_AdhrUserDeleted;
                     AdhrUsers.AdhrUserUpdated += AdhrUsers_AdhrUserUpdated;
                     AdhrUsers.AdhrUserPropertyChanged += AdhrUsers_AdhrUserPropertyChanged;
                 }
@@ -140,19 +136,6 @@ namespace AdHr.ViewModels
             }
         }
 
-        private void AdhrUsers_AdhrUserDeleted(object sender, AdhrEventArgs<string> e)
-        {
-            var result = repository.Delete(e.Dto);
-            if (result.HasSuccess)
-            {
-                ErrorMessage = string.Empty;
-            }
-            else
-            {
-                ErrorMessage = result.Message;
-            }
-        }
-
         private AdhrUserViewModel _selectedUser;
         public AdhrUserViewModel SelectedUser
         {
@@ -172,37 +155,11 @@ namespace AdHr.ViewModels
             get { return $"{ThisAssembly.Git.SemVer.Major + "." + ThisAssembly.Git.SemVer.Minor + "." + ThisAssembly.Git.SemVer.Patch + ".0"}"; }
         }
 
-        private ICommand _createCommand;
-        public ICommand CreateCommand { get { return _createCommand; } }
-
         private ICommand _propertiesCommand;
         public ICommand PropertiesCommand { get { return _propertiesCommand; } }
 
         private ICommand _connectCommand;
         public ICommand ConnectCommand { get { return _connectCommand; } }
-
-        //todo: ezt implementálni
-        public bool CanUserCreateContact { get; set; }
-
-        private void Create()
-        {
-            var createdData = new AdhrUserViewModel();
-            //todo a property gyűjteményt kitölteni
-            var readWindow = new CreateWindow(createdData);
-            var result = readWindow.ShowDialog();
-            if (result==true)
-            {
-                var result2 = repository.Create(createdData.SamAccountName, createdData.Description, createdData.DisplayName);
-                if (result2.HasSuccess)
-                {
-                    ErrorMessage = string.Empty;
-                }
-                else
-                {
-                    ErrorMessage = result2.Message;
-                }
-            }
-        }
 
         private void Properties()
         {

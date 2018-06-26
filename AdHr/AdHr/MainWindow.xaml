@@ -80,15 +80,6 @@
                                                          Height="10" />
                                     </Button.Content>
                                 </Button>
-                                <Button Padding="5"
-                                        Margin="1"
-                                        Command="{Binding DeleteCommand}" >
-                                    <Button.Content>
-                                        <fa:ImageAwesome Icon="Trash" 
-                                                         Width="10"
-                                                         Height="10" />
-                                    </Button.Content>
-                                </Button>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -117,10 +108,6 @@
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel Orientation="Horizontal">
-            <Button Content="Új névjegy létrehozása..." 
-                Padding="5"
-                Margin="10"
-                Command="{Binding CreateCommand}" />
             <Button Content="Beállítások" 
                 Padding="5"
                 Margin="10"

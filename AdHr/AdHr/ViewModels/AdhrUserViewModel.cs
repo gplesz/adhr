@@ -15,15 +15,6 @@ namespace AdHr.ViewModels
             _updateCommand = new AdhrCommand(
                  (param) => { Update(); }, (user) => { return IsDirty; }
             );
-            _deleteCommand = new AdhrCommand(
-                (param) => { Delete(); }
-            );
-        }
-
-        public event EventHandler<AdhrEventArgs<string>> AdhrUserDeleted;
-        private void OnAdhrUserDelete(string sid)
-        {
-            AdhrUserDeleted?.Invoke(this, new AdhrEventArgs<string>(sid));
         }
 
         public event EventHandler<AdhrEventArgs<AdhrUserUpdateRequest>> AdhrUserUpdated;
@@ -34,9 +25,6 @@ namespace AdHr.ViewModels
 
         private readonly ICommand _updateCommand;
         public ICommand UpdateCommand { get { return _updateCommand; } }
-
-        private readonly ICommand _deleteCommand;
-        public ICommand DeleteCommand { get { return _deleteCommand; } }
 
         private string _displayName;
         public string DisplayName
@@ -122,11 +110,6 @@ namespace AdHr.ViewModels
                     && Properties.Count > 0 
                     && Properties.Any(x => x.Value != x.OriginalValue);
             }
-        }
-
-        private void Delete()
-        {
-            OnAdhrUserDelete(Sid.Value);
         }
 
         private void Update()

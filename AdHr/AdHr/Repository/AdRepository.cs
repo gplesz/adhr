@@ -46,33 +46,6 @@ namespace AdHr.Repository
             directoryContext = new DirectoryContext(DirectoryContextType.DirectoryServer, address, userName, password);
         }
 
-        public RepositoryResponse<CreateUserResponse> Create(string login, string description, string displayName)
-        {
-            //todo: request dto-t készíteni
-            try
-            {
-                var user = new UserPrincipal(adContext)
-                {
-                    SamAccountName = login,
-                    DisplayName = displayName,
-                    Description = description
-                };
-                user.Save();
-                return new RepositoryResponse<CreateUserResponse>
-                {
-                    HasSuccess = true
-                };
-            }
-            catch (Exception ex)
-            {
-                return new RepositoryResponse<CreateUserResponse>
-                {
-                    HasSuccess = false,
-                    Message = ex.Message
-                };
-            }
-        }
-
         public RepositoryResponse<ReadUserResponse> Read(string sid)
         {
             try
@@ -123,37 +96,6 @@ namespace AdHr.Repository
             catch (Exception ex)
             {
                 var response = new RepositoryResponse<ReadUserResponse>
-                {
-                    Message = ex.Message,
-                    HasSuccess = false
-                };
-                return response;
-            }
-        }
-
-        public RepositoryResponse<DeleteUserResponse> Delete(string sid)
-        {
-            try
-            {
-                var user = UserPrincipal.FindByIdentity(adContext, sid);
-                if (user != null)
-                {
-                    var responseNotFound = new RepositoryResponse<DeleteUserResponse>
-                    {
-                        NotFound = true
-                    };
-                    return responseNotFound;
-                }
-                user.Delete();
-                var response = new RepositoryResponse<DeleteUserResponse>
-                {
-                    HasSuccess = true
-                };
-                return response;
-            }
-            catch (Exception ex)
-            {
-                var response = new RepositoryResponse<DeleteUserResponse>
                 {
                     Message = ex.Message,
                     HasSuccess = false
