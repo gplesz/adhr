@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,13 @@ namespace AdHr.ViewModels.Common
         {
             AdhrUserUpdated?.Invoke(this, new AdhrEventArgs<AdhrUserUpdateRequest>(new AdhrUserUpdateRequest(sid, properties)));
         }
+
+        public event EventHandler<PropertyChangedEventArgs> AdhrUserPropertyChanged;
+        private void OnAdhrUserPropertyChanged(PropertyChangedEventArgs e)
+        {
+            AdhrUserPropertyChanged?.Invoke(this, e);
+        }
+
 
         public AdhrUserCollection()
         {
@@ -56,6 +64,7 @@ namespace AdHr.ViewModels.Common
                 {
                     ((AdhrUserViewModel)item).AdhrUserDeleted -= AdhrUserDeletedHandler;
                     ((AdhrUserViewModel)item).AdhrUserUpdated -= AdhrUserUpdatedHandler;
+                    ((AdhrUserViewModel)item).PropertyChanged -= AdhrUserPropertyChangedHandler;
                 }
             }
 
@@ -65,8 +74,14 @@ namespace AdHr.ViewModels.Common
                 {
                     ((AdhrUserViewModel)item).AdhrUserDeleted += AdhrUserDeletedHandler;
                     ((AdhrUserViewModel)item).AdhrUserUpdated += AdhrUserUpdatedHandler;
+                    ((AdhrUserViewModel)item).PropertyChanged += AdhrUserPropertyChangedHandler;
                 }
             }
+        }
+
+        private void AdhrUserPropertyChangedHandler(object sender, PropertyChangedEventArgs e)
+        {
+            OnAdhrUserPropertyChanged(e);
         }
 
         private void AdhrUserUpdatedHandler(object sender, AdhrEventArgs<AdhrUserUpdateRequest> e)

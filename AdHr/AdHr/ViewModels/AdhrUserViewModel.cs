@@ -1,14 +1,9 @@
 ﻿using AdHr.ViewModels.Common;
-using AdHr.Views.AdhrUser;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace AdHr.ViewModels
@@ -141,6 +136,7 @@ namespace AdHr.ViewModels
                                                .ToDictionary(x=>x.Name, x=>x.Value);
 
             OnAdhrUserUpdate(Sid.Value, propertiesToUpdate);
+            OnPropertyChanged(nameof(IsDirty));
         }
     }
 }

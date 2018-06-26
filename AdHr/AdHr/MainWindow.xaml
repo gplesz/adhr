@@ -16,6 +16,8 @@
         <c:BooleanToVisibilityConverter x:Key="booleanToVisibility" 
                                         TriggerValue="False" 
                                         IsHidden="True" />
+        <c:SelectedUserToVisibilityConverter x:Key="selectedUserToVisibilityConverter" 
+                                         />
         <c:ErrorMessageToVisibilityConverter x:Key="errorMessageToVisibilityConverter"  />
         <Style x:Key="BodyContentDataGridCentering"
                TargetType="{x:Type DataGridCell}">
@@ -139,8 +141,9 @@
                     Margin="1">
             <Button Padding="5"
                     Margin="5"
-                    Visibility="{Binding SelectedUser.IsDirty, Converter={StaticResource booleanToVisibility}}"
+                    Visibility="{Binding SelectedUser, Converter={StaticResource selectedUserToVisibilityConverter}}"
                     Command="{Binding SelectedUser.UpdateCommand}" >
+                
                 <Button.Content>
                     <fa:ImageAwesome Icon="Edit" 
                                      Width="50"

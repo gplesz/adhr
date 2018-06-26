@@ -35,6 +35,8 @@ namespace AdHr.ViewModels
             _connectCommand = new AdhrCommand(
                 (param) => { refreshData(); }
             );
+
+            PropertyChanged += MainViewModel_PropertyChanged;
         }
 
         private void refreshData()
@@ -85,15 +87,33 @@ namespace AdHr.ViewModels
                 {
                     AdhrUsers.AdhrUserDeleted -= AdhrUsers_AdhrUserDeleted;
                     AdhrUsers.AdhrUserUpdated -= AdhrUsers_AdhrUserUpdated;
+                    AdhrUsers.AdhrUserPropertyChanged -= AdhrUsers_AdhrUserPropertyChanged;
                 }
                 SetProperty(value, ref _adhrUsers);
                 if (AdhrUsers != null)
                 {
                     AdhrUsers.AdhrUserDeleted += AdhrUsers_AdhrUserDeleted;
                     AdhrUsers.AdhrUserUpdated += AdhrUsers_AdhrUserUpdated;
+                    AdhrUsers.AdhrUserPropertyChanged += AdhrUsers_AdhrUserPropertyChanged;
                 }
             }
         }
+
+        private void AdhrUsers_AdhrUserPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsDirty")
+            {
+                OnPropertyChanged(nameof(SelectedUser));
+            }
+        }
+        private void MainViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsDirty")
+            {
+                OnPropertyChanged(nameof(SelectedUser));
+            }
+        }
+
 
         private void AdhrUsers_AdhrUserUpdated(object sender, AdhrEventArgs<AdhrUserUpdateRequest> e)
         {
