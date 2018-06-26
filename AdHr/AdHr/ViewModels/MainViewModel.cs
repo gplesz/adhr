@@ -169,6 +169,7 @@ namespace AdHr.ViewModels
             if (result == true)
             {
                 model.Save();
+                AdhrUsers = new AdhrUserCollection();
             }
         }
 
