@@ -159,3 +159,16 @@ ActiveDirectory: titkárnő tudjon felvinni contact-ot
                                                                             |                           |
                                                                             +---------------------------+
 ```
+
+### Következő lépések
+
+- bejelentkezéskor névfeloldás
+- async működés, hogy reszponzív maradjon
+- csak azoknak a csomópontoknak a lekérdezése, amihez tartozik írási jog
+- csak azoknak a kártyáknak a megmutatása, amihez van írható mező
+- megmutatni a felhasználót, akivel be vagyunk lépve
+- ha nincs kitöltve a szervernév, akkor az automatikus szervert keresse
+- bejelentezéskor névfeloldás
+- nem kell létrehozás és törlés
+- 
+
