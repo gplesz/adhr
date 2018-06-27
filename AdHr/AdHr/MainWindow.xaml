@@ -121,7 +121,7 @@
             <StackPanel Orientation="Horizontal"
                VerticalAlignment="Top"
                HorizontalAlignment="Left"
->               <Label Content="Felhasználónév:" />
+>               <Label Content="Szerver:" />
                 <Label Content="{Binding SettingsViewModel.AdServer}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal"
@@ -129,7 +129,7 @@
                HorizontalAlignment="Left"
                Grid.Column="2" Grid.Row="0">
                 <Label Content="Felhasználónév:" />
-                <Label Content="{Binding SettingsViewModel.UserName}" />
+                <Label Content="{Binding SettingsViewModel.Login}" />
             </StackPanel>
         </StackPanel>
         <Label Content="{Binding Version}"

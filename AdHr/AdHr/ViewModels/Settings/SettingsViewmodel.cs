@@ -20,14 +20,22 @@ namespace AdHr.ViewModels.Settings
         public AuthTypes AuthType
         {
             get { return _authType; }
-            set { SetProperty(value, ref _authType); }
+            set
+            {
+                SetProperty(value, ref _authType);
+                OnPropertyChanged(nameof(Login));
+            }
         }
 
         private string _userName;
         public string UserName
         {
             get { return _userName; }
-            set { SetProperty(value, ref _userName); }
+            set
+            {
+                SetProperty(value, ref _userName);
+                OnPropertyChanged(nameof(Login));
+            }
         }
 
         private string _password;
@@ -35,6 +43,14 @@ namespace AdHr.ViewModels.Settings
         {
             get { return _password; }
             set { SetProperty(value, ref _password); }
+        }
+
+        public string Login
+        {
+            get
+            {
+                return AuthType == AuthTypes.WindowsAuthentication ? "Windows bejelentkezés" : UserName;
+            }
         }
 
         public void Save()
