@@ -5,6 +5,11 @@
              xmlns:properties="clr-namespace:AdHr.Properties"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <properties:Settings x:Key="Settings" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/LoadingIndicators.WPF;component/Colors.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/LoadingIndicators.WPF;component/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

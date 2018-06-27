@@ -44,6 +44,7 @@ namespace AdHr.ViewModels
             var authType = (AuthTypes)AdHr.Properties.Settings.Default.AuthType;
             try
             {
+                IsWorking = true;
                 switch (authType)
                 {
                     case AuthTypes.WindowsAuthentication:
@@ -82,6 +83,10 @@ namespace AdHr.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
+            }
+            finally
+            {
+                IsWorking = false;
             }
         }
 
@@ -123,26 +128,38 @@ namespace AdHr.ViewModels
 
         private void AdhrUsers_AdhrUserUpdated(object sender, AdhrEventArgs<AdhrUserUpdateRequest> e)
         {
-            var result = repository.Update(e.Dto.Sid, e.Dto.Properties);
-            if (result.HasSuccess)
+            try
             {
-                ErrorMessage = string.Empty;
-                //frissíteni az adatokat
-
-                var user = AdhrUsers.Single(x => x.Sid.Value == e.Dto.Sid);
-                //todo: ezt egy kicsit lehetne ügyesíteni
-                //befrissítjük a lementett property-t az originalvalue-ba
-                foreach (var property in user.Properties)
+                IsWorking = true;
+                var result = repository.Update(e.Dto.Sid, e.Dto.Properties);
+                if (result.HasSuccess)
                 {
-                    if (e.Dto.Properties.Keys.Contains(property.Name))
+                    ErrorMessage = string.Empty;
+                    //frissíteni az adatokat
+
+                    var user = AdhrUsers.Single(x => x.Sid.Value == e.Dto.Sid);
+                    //todo: ezt egy kicsit lehetne ügyesíteni
+                    //befrissítjük a lementett property-t az originalvalue-ba
+                    foreach (var property in user.Properties)
                     {
-                        property.OriginalValue = e.Dto.Properties[property.Name];
+                        if (e.Dto.Properties.Keys.Contains(property.Name))
+                        {
+                            property.OriginalValue = e.Dto.Properties[property.Name];
+                        }
                     }
                 }
+                else
+                {
+                    ErrorMessage = result.Message;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ErrorMessage = result.Message;
+                ErrorMessage = ex.Message;
+            }
+            finally
+            {
+                IsWorking = false;
             }
         }
 
@@ -178,6 +195,12 @@ namespace AdHr.ViewModels
             set { SetProperty(value, ref _settingsViewModel); }
         }
 
+        private bool _isWorking;
+        public bool IsWorking
+        {
+            get { return _isWorking; }
+            set { SetProperty(value, ref _isWorking); }
+        }
 
         private void Properties()
         {

@@ -7,30 +7,36 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:AdHr"
         xmlns:c="clr-namespace:AdHr.Converters"
+        xmlns:loadin="clr-namespace:LoadingIndicators.WPF;assembly=LoadingIndicators.WPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <c:BooleanToVisibilityConverter x:Key="booleanToVisibility" 
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/LoadingIndicators.WPF;component/Styles/LoadingFlipPlane.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <c:BooleanToVisibilityConverter x:Key="booleanToVisibility" 
                                         TriggerValue="False" 
                                         IsHidden="True" />
-        <c:SelectedUserToVisibilityConverter x:Key="selectedUserToVisibilityConverter" 
+            <c:SelectedUserToVisibilityConverter x:Key="selectedUserToVisibilityConverter" 
                                          />
-        <c:ErrorMessageToVisibilityConverter x:Key="errorMessageToVisibilityConverter"  />
-        <Style x:Key="BodyContentDataGridCentering"
+            <c:ErrorMessageToVisibilityConverter x:Key="errorMessageToVisibilityConverter"  />
+            <Style x:Key="BodyContentDataGridCentering"
                TargetType="{x:Type DataGridCell}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type DataGridCell}">
-                        <Grid Background="{TemplateBinding Background}">
-                            <ContentPresenter VerticalAlignment="Center" />
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type DataGridCell}">
+                            <Grid Background="{TemplateBinding Background}">
+                                <ContentPresenter VerticalAlignment="Center" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -112,10 +118,19 @@
                 Padding="5"
                 Margin="10"
                 Command="{Binding PropertiesCommand}" />
-            <Button Content="Kapcsolódás" 
+            <Button
                 Padding="5"
                 Margin="10"
-                Command="{Binding ConnectCommand}" />
+                Command="{Binding ConnectCommand}" >
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Kapcsolódás"
+                               Padding="5"
+                               VerticalAlignment="Center"
+                               />
+                    </StackPanel>
+                </Button.Content>
+            </Button>
         </StackPanel>
         <StackPanel Grid.Column="2" Grid.Row="0">
             <StackPanel Orientation="Horizontal"
@@ -136,6 +151,12 @@
                VerticalAlignment="Top"
                HorizontalAlignment="Right"
                Grid.Column="2" Grid.Row="0"/>
+        <loadin:LoadingIndicator Grid.Column="2" Grid.Row="0"
+                                 VerticalAlignment="Bottom"
+                                 HorizontalAlignment="Right"
+                                 SpeedRatio="1" 
+                                 IsActive="{Binding IsWorking}" 
+                            />
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Grid.Column="2"
@@ -145,7 +166,6 @@
                     Margin="5"
                     Visibility="{Binding SelectedUser, Converter={StaticResource selectedUserToVisibilityConverter}}"
                     Command="{Binding SelectedUser.UpdateCommand}" >
-                
                 <Button.Content>
                     <fa:ImageAwesome Icon="Edit" 
                                      Width="50"
