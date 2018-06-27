@@ -1,3 +1,5 @@
+![](https://pedellus.visualstudio.com/_apis/public/build/definitions/16e7611b-3a78-4b03-bed9-9a04deef2d3a/14/badge)
+
 # adhr: mezei felhasználók számára az Active Directory megszelidítése
 
 Szükség van egy olyan alkalmazásra:
