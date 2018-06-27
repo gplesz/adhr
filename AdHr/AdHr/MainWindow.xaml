@@ -117,6 +117,21 @@
                 Margin="10"
                 Command="{Binding ConnectCommand}" />
         </StackPanel>
+        <StackPanel Grid.Column="2" Grid.Row="0">
+            <StackPanel Orientation="Horizontal"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Left"
+>               <Label Content="Felhasználónév:" />
+                <Label Content="{Binding SettingsViewModel.AdServer}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Left"
+               Grid.Column="2" Grid.Row="0">
+                <Label Content="Felhasználónév:" />
+                <Label Content="{Binding SettingsViewModel.UserName}" />
+            </StackPanel>
+        </StackPanel>
         <Label Content="{Binding Version}"
                VerticalAlignment="Top"
                HorizontalAlignment="Right"

@@ -2,11 +2,9 @@
 using AdHr.Repository;
 using AdHr.ViewModels.Common;
 using AdHr.ViewModels.Settings;
-using AdHr.Views.AdhrUser;
 using AdHr.Views.Properties;
 using AutoMapper;
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Input;
@@ -35,6 +33,8 @@ namespace AdHr.ViewModels
             );
 
             PropertyChanged += MainViewModel_PropertyChanged;
+
+            SettingsViewModel = new SettingsViewModel();
         }
 
         private void refreshData()
@@ -161,6 +161,14 @@ namespace AdHr.ViewModels
         private ICommand _connectCommand;
         public ICommand ConnectCommand { get { return _connectCommand; } }
 
+        private SettingsViewModel _settingsViewModel;
+        public SettingsViewModel SettingsViewModel
+        {
+            get { return _settingsViewModel; }
+            set { SetProperty(value, ref _settingsViewModel); }
+        }
+
+
         private void Properties()
         {
             var model = new SettingsViewModel();
@@ -170,6 +178,7 @@ namespace AdHr.ViewModels
             {
                 model.Save();
                 AdhrUsers = new AdhrUserCollection();
+                SettingsViewModel.Load();
             }
         }
 
