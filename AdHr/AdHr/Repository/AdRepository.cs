@@ -116,7 +116,11 @@ namespace AdHr.Repository
                     var searchResult = search.FindAll();
                     foreach (var up in searchResult)
                     {
-                        responseList.Add(GetUserInfo(up));
+                        var apl = GetUserInfo(up);
+                        if (apl.Properties.Count>0)
+                        {
+                            responseList.Add(apl);
+                        }
                     }
                     return new RepositoryResponse<IReadOnlyCollection<ReadUserResponse>>(
                                 new ReadOnlyCollection<ReadUserResponse>(responseList))
