@@ -18,7 +18,7 @@ namespace AdHr.ViewModels
             set { SetProperty(value, ref _value); }
         }
 
-        public string OriginalValue { get; private set; }
+        public string OriginalValue { get; set; }
 
         private ObservableCollection<AdhrValueViewModel> _values;
         public ObservableCollection<AdhrValueViewModel> Values

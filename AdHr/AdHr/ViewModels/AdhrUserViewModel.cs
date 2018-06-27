@@ -1,13 +1,9 @@
 ﻿using AdHr.ViewModels.Common;
-using AdHr.Views.AdhrUser;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Principal;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -18,17 +14,8 @@ namespace AdHr.ViewModels
         public AdhrUserViewModel()
         {
             _updateCommand = new AdhrCommand(
-                 (param) => { Update(); }, (user) => { return IsDirty; }
+                 async (param) => { await Update(); }, (user) => { return IsDirty; }
             );
-            _deleteCommand = new AdhrCommand(
-                (param) => { Delete(); }
-            );
-        }
-
-        public event EventHandler<AdhrEventArgs<string>> AdhrUserDeleted;
-        private void OnAdhrUserDelete(string sid)
-        {
-            AdhrUserDeleted?.Invoke(this, new AdhrEventArgs<string>(sid));
         }
 
         public event EventHandler<AdhrEventArgs<AdhrUserUpdateRequest>> AdhrUserUpdated;
@@ -39,9 +26,6 @@ namespace AdHr.ViewModels
 
         private readonly ICommand _updateCommand;
         public ICommand UpdateCommand { get { return _updateCommand; } }
-
-        private readonly ICommand _deleteCommand;
-        public ICommand DeleteCommand { get { return _deleteCommand; } }
 
         private string _displayName;
         public string DisplayName
@@ -120,20 +104,25 @@ namespace AdHr.ViewModels
             set { SetProperty(value, ref _selectedProperty); }
         }
 
-        public bool IsDirty { get { return Properties.Any(x => x.Value != x.OriginalValue); } }
-
-        private void Delete()
-        {
-            OnAdhrUserDelete(Sid.Value);
+        public bool IsDirty {
+            get
+            {
+                return Properties!=null 
+                    && Properties.Count > 0 
+                    && Properties.Any(x => x.Value != x.OriginalValue);
+            }
         }
 
-        private void Update()
+        private async Task Update()
         {
-            var propertiesToUpdate = Properties.Where(x => x.Value != x.OriginalValue)
-                                               .ToList()
-                                               .ToDictionary(x=>x.Name, x=>x.Value);
+            await Task.Run(() => {
+                var propertiesToUpdate = Properties.Where(x => x.Value != x.OriginalValue)
+                                                   .ToList()
+                                                   .ToDictionary(x => x.Name, x => x.Value);
 
-            OnAdhrUserUpdate(Sid.Value, propertiesToUpdate);
+                OnAdhrUserUpdate(Sid.Value, propertiesToUpdate);
+            });
+            OnPropertyChanged(nameof(IsDirty));
         }
     }
 }

@@ -2,12 +2,12 @@
 using AdHr.Repository;
 using AdHr.ViewModels.Common;
 using AdHr.ViewModels.Settings;
-using AdHr.Views.AdhrUser;
 using AdHr.Views.Properties;
 using AutoMapper;
 using System;
-using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace AdHr.ViewModels
@@ -25,52 +25,68 @@ namespace AdHr.ViewModels
         {
             var config = new MapperConfiguration(cfg => cfg.AddProfile<ViewModelProfile>());
             mapper = config.CreateMapper();
-            _createCommand = new AdhrCommand(
-                (param) => { Create(); }
-            );
+
             _propertiesCommand = new AdhrCommand(
                 (param) => { Properties(); }
             );
             _connectCommand = new AdhrCommand(
-                (param) => { refreshData(); }
+                async (param) => { await refreshData(); }
             );
+
+            PropertyChanged += MainViewModel_PropertyChanged;
+
+            SettingsViewModel = new SettingsViewModel();
         }
 
-        private void refreshData()
+        private async Task refreshData()
         {
             ErrorMessage = string.Empty;
             var authType = (AuthTypes)AdHr.Properties.Settings.Default.AuthType;
             try
             {
+                IsWorking = true;
                 switch (authType)
                 {
                     case AuthTypes.WindowsAuthentication:
-                        repository = new AdRepository(
-                            AdHr.Properties.Settings.Default.AdServer
-                            );
+                        await Task.Run(() =>
+                        {
+                            repository = new AdRepository(
+                                AdHr.Properties.Settings.Default.AdServer
+                                );
+                        });
                         break;
                     case AuthTypes.NameAndPassword:
-                        repository = new AdRepository(
-                            AdHr.Properties.Settings.Default.AdServer
-                            , AdHr.Properties.Settings.Default.UserName
-                            , AdHr.Properties.Settings.Default.Password);
+                        await Task.Run(() =>
+                        {
+                            repository = new AdRepository(
+                                AdHr.Properties.Settings.Default.AdServer
+                                , AdHr.Properties.Settings.Default.UserName
+                                , AdHr.Properties.Settings.Default.Password);
+                        });
                         break;
                     default:
                         break;
                 }
-                var users = repository.GetList();
-                if (users.HasSuccess)
+                await Task.Run(() =>
                 {
-                    AdhrUsers = mapper.Map<AdhrUserCollection>(users.Data);
-                }
-                else
-                {
-                    ErrorMessage = users.Message;
-                }
+                    var users = repository.GetList();
+                    if (users.HasSuccess)
+                    {
+                        AdhrUsers = mapper.Map<AdhrUserCollection>(users.Data);
+                    }
+                    else
+                    {
+                        ErrorMessage = users.Message;
+                    }
+                });
             }
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
+            }
+            finally
+            {
+                IsWorking = false;
             }
         }
 
@@ -82,41 +98,68 @@ namespace AdHr.ViewModels
             {
                 if (AdhrUsers != null)
                 {
-                    AdhrUsers.AdhrUserDeleted -= AdhrUsers_AdhrUserDeleted;
                     AdhrUsers.AdhrUserUpdated -= AdhrUsers_AdhrUserUpdated;
+                    AdhrUsers.AdhrUserPropertyChanged -= AdhrUsers_AdhrUserPropertyChanged;
                 }
                 SetProperty(value, ref _adhrUsers);
                 if (AdhrUsers != null)
                 {
-                    AdhrUsers.AdhrUserDeleted += AdhrUsers_AdhrUserDeleted;
                     AdhrUsers.AdhrUserUpdated += AdhrUsers_AdhrUserUpdated;
+                    AdhrUsers.AdhrUserPropertyChanged += AdhrUsers_AdhrUserPropertyChanged;
                 }
             }
         }
 
-        private void AdhrUsers_AdhrUserUpdated(object sender, AdhrEventArgs<AdhrUserUpdateRequest> e)
+        private void AdhrUsers_AdhrUserPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            var result = repository.Update(e.Dto.Sid, e.Dto.Properties);
-            if (result.HasSuccess)
+            if (e.PropertyName == "IsDirty")
             {
-                ErrorMessage = string.Empty;
+                OnPropertyChanged(nameof(SelectedUser));
             }
-            else
+        }
+        private void MainViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsDirty")
             {
-                ErrorMessage = result.Message;
+                OnPropertyChanged(nameof(SelectedUser));
             }
         }
 
-        private void AdhrUsers_AdhrUserDeleted(object sender, AdhrEventArgs<string> e)
+
+        private void AdhrUsers_AdhrUserUpdated(object sender, AdhrEventArgs<AdhrUserUpdateRequest> e)
         {
-            var result = repository.Delete(e.Dto);
-            if (result.HasSuccess)
+            try
             {
-                ErrorMessage = string.Empty;
+                IsWorking = true;
+                var result = repository.Update(e.Dto.Sid, e.Dto.Properties);
+                if (result.HasSuccess)
+                {
+                    ErrorMessage = string.Empty;
+                    //frissíteni az adatokat
+
+                    var user = AdhrUsers.Single(x => x.Sid.Value == e.Dto.Sid);
+                    //todo: ezt egy kicsit lehetne ügyesíteni
+                    //befrissítjük a lementett property-t az originalvalue-ba
+                    foreach (var property in user.Properties)
+                    {
+                        if (e.Dto.Properties.Keys.Contains(property.Name))
+                        {
+                            property.OriginalValue = e.Dto.Properties[property.Name];
+                        }
+                    }
+                }
+                else
+                {
+                    ErrorMessage = result.Message;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ErrorMessage = result.Message;
+                ErrorMessage = ex.Message;
+            }
+            finally
+            {
+                IsWorking = false;
             }
         }
 
@@ -139,36 +182,24 @@ namespace AdHr.ViewModels
             get { return $"{ThisAssembly.Git.SemVer.Major + "." + ThisAssembly.Git.SemVer.Minor + "." + ThisAssembly.Git.SemVer.Patch + ".0"}"; }
         }
 
-        private ICommand _createCommand;
-        public ICommand CreateCommand { get { return _createCommand; } }
-
         private ICommand _propertiesCommand;
         public ICommand PropertiesCommand { get { return _propertiesCommand; } }
 
         private ICommand _connectCommand;
         public ICommand ConnectCommand { get { return _connectCommand; } }
 
-        //todo: ezt implementálni
-        public bool CanUserCreateContact { get; set; }
-
-        private void Create()
+        private SettingsViewModel _settingsViewModel;
+        public SettingsViewModel SettingsViewModel
         {
-            var createdData = new AdhrUserViewModel();
-            //todo a property gyűjteményt kitölteni
-            var readWindow = new CreateWindow(createdData);
-            var result = readWindow.ShowDialog();
-            if (result==true)
-            {
-                var result2 = repository.Create(createdData.SamAccountName, createdData.Description, createdData.DisplayName);
-                if (result2.HasSuccess)
-                {
-                    ErrorMessage = string.Empty;
-                }
-                else
-                {
-                    ErrorMessage = result2.Message;
-                }
-            }
+            get { return _settingsViewModel; }
+            set { SetProperty(value, ref _settingsViewModel); }
+        }
+
+        private bool _isWorking;
+        public bool IsWorking
+        {
+            get { return _isWorking; }
+            set { SetProperty(value, ref _isWorking); }
         }
 
         private void Properties()
@@ -179,6 +210,8 @@ namespace AdHr.ViewModels
             if (result == true)
             {
                 model.Save();
+                AdhrUsers = new AdhrUserCollection();
+                SettingsViewModel.Load();
             }
         }
 
