@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.DirectoryServices.ActiveDirectory;
 using AdHr.Repository.Models;
+using System.Threading.Tasks;
 
 namespace AdHr.Repository
 {
@@ -46,33 +47,6 @@ namespace AdHr.Repository
             directoryContext = new DirectoryContext(DirectoryContextType.DirectoryServer, address, userName, password);
         }
 
-        public RepositoryResponse<CreateUserResponse> Create(string login, string description, string displayName)
-        {
-            //todo: request dto-t készíteni
-            try
-            {
-                var user = new UserPrincipal(adContext)
-                {
-                    SamAccountName = login,
-                    DisplayName = displayName,
-                    Description = description
-                };
-                user.Save();
-                return new RepositoryResponse<CreateUserResponse>
-                {
-                    HasSuccess = true
-                };
-            }
-            catch (Exception ex)
-            {
-                return new RepositoryResponse<CreateUserResponse>
-                {
-                    HasSuccess = false,
-                    Message = ex.Message
-                };
-            }
-        }
-
         public RepositoryResponse<ReadUserResponse> Read(string sid)
         {
             try
@@ -104,56 +78,27 @@ namespace AdHr.Repository
         {
             try
             {
-                var user = UserPrincipal.FindByIdentity(adContext, sid);
-                using (var o = (DirectoryEntry)user.GetUnderlyingObject())
+                using (var user = UserPrincipal.FindByIdentity(adContext, sid))
                 {
-                    foreach (var property in properties)
+                    using (var o = (DirectoryEntry)user.GetUnderlyingObject())
                     {
-                        o.Properties[property.Key].Value = property.Value;
+                        foreach (var property in properties)
+                        {
+                            o.Properties[property.Key].Value = property.Value;
+                        }
+                        o.CommitChanges();
                     }
-                    o.CommitChanges();
-                }
 
-                var response = new RepositoryResponse<ReadUserResponse>
-                {
-                    HasSuccess = true
-                };
-                return response;
-            }
-            catch (Exception ex)
-            {
-                var response = new RepositoryResponse<ReadUserResponse>
-                {
-                    Message = ex.Message,
-                    HasSuccess = false
-                };
-                return response;
-            }
-        }
-
-        public RepositoryResponse<DeleteUserResponse> Delete(string sid)
-        {
-            try
-            {
-                var user = UserPrincipal.FindByIdentity(adContext, sid);
-                if (user != null)
-                {
-                    var responseNotFound = new RepositoryResponse<DeleteUserResponse>
+                    var response = new RepositoryResponse<ReadUserResponse>
                     {
-                        NotFound = true
+                        HasSuccess = true
                     };
-                    return responseNotFound;
+                    return response;
                 }
-                user.Delete();
-                var response = new RepositoryResponse<DeleteUserResponse>
-                {
-                    HasSuccess = true
-                };
-                return response;
             }
             catch (Exception ex)
             {
-                var response = new RepositoryResponse<DeleteUserResponse>
+                var response = new RepositoryResponse<ReadUserResponse>
                 {
                     Message = ex.Message,
                     HasSuccess = false
@@ -169,18 +114,24 @@ namespace AdHr.Repository
             {
                 using (var userPrincipal = new UserPrincipal(adContext))
                 {
-                    var search = new PrincipalSearcher(userPrincipal);
-                    var responseList = new List<ReadUserResponse>();
-                    var searchResult = search.FindAll();
-                    foreach (var up in searchResult)
+                    using (var search = new PrincipalSearcher(userPrincipal))
                     {
-                        responseList.Add(GetUserInfo(up));
+                        var responseList = new List<ReadUserResponse>();
+                        var searchResult = search.FindAll();
+                        foreach (var up in searchResult)
+                        {
+                            var apl = GetUserInfo(up);
+                            if (apl.Properties.Count > 0)
+                            {
+                                responseList.Add(apl);
+                            }
+                        }
+                        return new RepositoryResponse<IReadOnlyCollection<ReadUserResponse>>(
+                                    new ReadOnlyCollection<ReadUserResponse>(responseList))
+                        {
+                            HasSuccess = true
+                        };
                     }
-                    return new RepositoryResponse<IReadOnlyCollection<ReadUserResponse>>(
-                                new ReadOnlyCollection<ReadUserResponse>(responseList))
-                    {
-                        HasSuccess = true
-                    };
                 }
             }
             catch (Exception ex)
