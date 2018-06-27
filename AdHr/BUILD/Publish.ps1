@@ -24,6 +24,12 @@ $csProjAbsolutePath = Join-Path $solutionDirAbsolutePath $CsProjPath
 #$msBuild = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.EXE"
 $msBuild = "C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild.EXE"
 
+[xml]$projectFile = Get-Content "$csProjAbsolutePath"
+$projectFile.Project.ChildNodes.Item(1).ApplicationVersion = "$BuildNumber"
+$projectFile.Save("$csProjAbsolutePath")
+
+Write-Host "BuildNumber: $BuildNumber" -Debug
+
 #calling msbuild to build and publish the project
 & $msBuild $csProjAbsolutePath `
 /p:Configuration=$BuildConfiguration `
