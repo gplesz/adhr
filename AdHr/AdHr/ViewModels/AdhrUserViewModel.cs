@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace AdHr.ViewModels
@@ -13,7 +14,7 @@ namespace AdHr.ViewModels
         public AdhrUserViewModel()
         {
             _updateCommand = new AdhrCommand(
-                 (param) => { Update(); }, (user) => { return IsDirty; }
+                 async (param) => { await Update(); }, (user) => { return IsDirty; }
             );
         }
 
@@ -112,13 +113,15 @@ namespace AdHr.ViewModels
             }
         }
 
-        private void Update()
+        private async Task Update()
         {
-            var propertiesToUpdate = Properties.Where(x => x.Value != x.OriginalValue)
-                                               .ToList()
-                                               .ToDictionary(x=>x.Name, x=>x.Value);
+            await Task.Run(() => {
+                var propertiesToUpdate = Properties.Where(x => x.Value != x.OriginalValue)
+                                                   .ToList()
+                                                   .ToDictionary(x => x.Name, x => x.Value);
 
-            OnAdhrUserUpdate(Sid.Value, propertiesToUpdate);
+                OnAdhrUserUpdate(Sid.Value, propertiesToUpdate);
+            });
             OnPropertyChanged(nameof(IsDirty));
         }
     }

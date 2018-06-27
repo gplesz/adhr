@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.DirectoryServices.ActiveDirectory;
 using AdHr.Repository.Models;
+using System.Threading.Tasks;
 
 namespace AdHr.Repository
 {
@@ -77,21 +78,23 @@ namespace AdHr.Repository
         {
             try
             {
-                var user = UserPrincipal.FindByIdentity(adContext, sid);
-                using (var o = (DirectoryEntry)user.GetUnderlyingObject())
+                using (var user = UserPrincipal.FindByIdentity(adContext, sid))
                 {
-                    foreach (var property in properties)
+                    using (var o = (DirectoryEntry)user.GetUnderlyingObject())
                     {
-                        o.Properties[property.Key].Value = property.Value;
+                        foreach (var property in properties)
+                        {
+                            o.Properties[property.Key].Value = property.Value;
+                        }
+                        o.CommitChanges();
                     }
-                    o.CommitChanges();
-                }
 
-                var response = new RepositoryResponse<ReadUserResponse>
-                {
-                    HasSuccess = true
-                };
-                return response;
+                    var response = new RepositoryResponse<ReadUserResponse>
+                    {
+                        HasSuccess = true
+                    };
+                    return response;
+                }
             }
             catch (Exception ex)
             {
@@ -111,22 +114,24 @@ namespace AdHr.Repository
             {
                 using (var userPrincipal = new UserPrincipal(adContext))
                 {
-                    var search = new PrincipalSearcher(userPrincipal);
-                    var responseList = new List<ReadUserResponse>();
-                    var searchResult = search.FindAll();
-                    foreach (var up in searchResult)
+                    using (var search = new PrincipalSearcher(userPrincipal))
                     {
-                        var apl = GetUserInfo(up);
-                        if (apl.Properties.Count>0)
+                        var responseList = new List<ReadUserResponse>();
+                        var searchResult = search.FindAll();
+                        foreach (var up in searchResult)
                         {
-                            responseList.Add(apl);
+                            var apl = GetUserInfo(up);
+                            if (apl.Properties.Count > 0)
+                            {
+                                responseList.Add(apl);
+                            }
                         }
+                        return new RepositoryResponse<IReadOnlyCollection<ReadUserResponse>>(
+                                    new ReadOnlyCollection<ReadUserResponse>(responseList))
+                        {
+                            HasSuccess = true
+                        };
                     }
-                    return new RepositoryResponse<IReadOnlyCollection<ReadUserResponse>>(
-                                new ReadOnlyCollection<ReadUserResponse>(responseList))
-                    {
-                        HasSuccess = true
-                    };
                 }
             }
             catch (Exception ex)

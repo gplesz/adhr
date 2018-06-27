@@ -7,6 +7,7 @@ using AutoMapper;
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace AdHr.ViewModels
@@ -29,7 +30,7 @@ namespace AdHr.ViewModels
                 (param) => { Properties(); }
             );
             _connectCommand = new AdhrCommand(
-                (param) => { refreshData(); }
+                async (param) => { await refreshData(); }
             );
 
             PropertyChanged += MainViewModel_PropertyChanged;
@@ -37,7 +38,7 @@ namespace AdHr.ViewModels
             SettingsViewModel = new SettingsViewModel();
         }
 
-        private void refreshData()
+        private async Task refreshData()
         {
             ErrorMessage = string.Empty;
             var authType = (AuthTypes)AdHr.Properties.Settings.Default.AuthType;
@@ -46,28 +47,37 @@ namespace AdHr.ViewModels
                 switch (authType)
                 {
                     case AuthTypes.WindowsAuthentication:
-                        repository = new AdRepository(
-                            AdHr.Properties.Settings.Default.AdServer
-                            );
+                        await Task.Run(() =>
+                        {
+                            repository = new AdRepository(
+                                AdHr.Properties.Settings.Default.AdServer
+                                );
+                        });
                         break;
                     case AuthTypes.NameAndPassword:
-                        repository = new AdRepository(
-                            AdHr.Properties.Settings.Default.AdServer
-                            , AdHr.Properties.Settings.Default.UserName
-                            , AdHr.Properties.Settings.Default.Password);
+                        await Task.Run(() =>
+                        {
+                            repository = new AdRepository(
+                                AdHr.Properties.Settings.Default.AdServer
+                                , AdHr.Properties.Settings.Default.UserName
+                                , AdHr.Properties.Settings.Default.Password);
+                        });
                         break;
                     default:
                         break;
                 }
-                var users = repository.GetList();
-                if (users.HasSuccess)
+                await Task.Run(() =>
                 {
-                    AdhrUsers = mapper.Map<AdhrUserCollection>(users.Data);
-                }
-                else
-                {
-                    ErrorMessage = users.Message;
-                }
+                    var users = repository.GetList();
+                    if (users.HasSuccess)
+                    {
+                        AdhrUsers = mapper.Map<AdhrUserCollection>(users.Data);
+                    }
+                    else
+                    {
+                        ErrorMessage = users.Message;
+                    }
+                });
             }
             catch (Exception ex)
             {
